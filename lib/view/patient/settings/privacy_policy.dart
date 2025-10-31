@@ -13,6 +13,7 @@ class PrivacyPolicy extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ConditionWidget(
                 title: "Privacy Policy",
