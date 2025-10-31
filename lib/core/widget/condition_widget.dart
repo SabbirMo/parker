@@ -40,7 +40,7 @@ class BulletText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
+      padding: const EdgeInsets.only(left: 6),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
