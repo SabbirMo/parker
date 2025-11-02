@@ -7,7 +7,6 @@ import 'package:parker_touch/core/constants/app_colors.dart';
 import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
-import 'package:parker_touch/view/patient/add_medicine/add_medicine.dart';
 
 class ShowDialogWidget extends StatefulWidget {
   const ShowDialogWidget({super.key});
@@ -246,12 +245,7 @@ class MedicineVerifyScreen extends StatelessWidget {
                 child: CustomButton(
                   text: "CONFIRM & TAKEN MEDICINE",
                   bgColor: AppColors.green,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const AddMedicine()),
-                    );
-                  },
+                  onTap: () {},
                   isBoxShadow: false,
                 ),
               ),

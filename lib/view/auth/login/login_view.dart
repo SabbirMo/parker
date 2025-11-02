@@ -10,6 +10,7 @@ import 'package:parker_touch/core/widget/back_button.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/core/widget/custom_textfield.dart';
 import 'package:parker_touch/view/auth/forgot/forgot_password.dart';
+import 'package:parker_touch/view/choose%20user/choose_user.dart';
 import 'package:parker_touch/view/patient/patient_view.dart';
 import 'package:parker_touch/view/monitor/monitor_view.dart';
 
@@ -66,97 +67,110 @@ class _LoginViewState extends State<LoginView> {
                   width: MediaQuery.of(context).size.width * 0.4,
                 ),
               ),
-
               Positioned(top: 50, left: 20, child: CustomBackButton()),
             ],
           ),
-
-          const Spacer(flex: 2),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.92,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColors.loginCont,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Color(0xffd6d9dd)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withValues(alpha: 0.3),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(AppString.login, style: FontManager.titleStyle),
-                Text(
-                  AppString.account,
-                  style: FontManager.subtitle.copyWith(color: AppColors.grey),
-                ),
-                AppSpacing.h12,
-                CustomTextfield(
-                  text: AppString.email,
-                  hintText: AppString.hintEmailAddress,
-                  controller: _emailController,
-                ),
-                CustomTextfield(
-                  text: AppString.password,
-                  hintText: AppString.hintPassword,
-                  icon: Icons.visibility_outlined,
-                  obscureText: true,
-                  controller: _passwordController,
-                ),
-
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const ForgotPassword()),
-                    );
-                  },
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      AppString.forgot,
-                      style: FontManager.subtitle.copyWith(
-                        color: AppColors.grey,
-                      ),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.92,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.loginCont,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Color(0xffd6d9dd)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withValues(alpha: 0.3),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(AppString.login, style: FontManager.titleStyle),
+                        Text(
+                          AppString.account,
+                          style: FontManager.subtitle.copyWith(
+                            color: AppColors.grey,
+                          ),
+                        ),
+                        AppSpacing.h12,
+                        CustomTextfield(
+                          text: AppString.email,
+                          hintText: AppString.hintEmailAddress,
+                          controller: _emailController,
+                        ),
+                        CustomTextfield(
+                          text: AppString.password,
+                          hintText: AppString.hintPassword,
+                          icon: Icons.visibility_outlined,
+                          obscureText: true,
+                          controller: _passwordController,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const ForgotPassword(),
+                              ),
+                            );
+                          },
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              AppString.forgot,
+                              style: FontManager.subtitle.copyWith(
+                                color: AppColors.grey,
+                              ),
+                            ),
+                          ),
+                        ),
+                        AppSpacing.h10,
+                        CustomButton(text: "Login", onTap: _handleLogin),
+                        AppSpacing.h10,
+                        Align(
+                          child: Text(
+                            AppString.dontHave,
+                            style: FontManager.loginStyle.copyWith(
+                              color: AppColors.patient,
+                              fontSize: 14.sp,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        AppSpacing.h2,
+                        Align(
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(builder: (_) => ChooseUser()),
+                              );
+                            },
+                            child: Text(
+                              AppString.create,
+                              style: FontManager.loginStyle.copyWith(
+                                color: AppColors.login,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-
-                AppSpacing.h10,
-                CustomButton(text: "Login", onTap: _handleLogin),
-                AppSpacing.h10,
-                Align(
-                  child: Text(
-                    AppString.dontHave,
-                    style: FontManager.loginStyle.copyWith(
-                      color: AppColors.patient,
-                      fontSize: 14.sp,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                AppSpacing.h2,
-                Align(
-                  child: InkWell(
-                    onTap: () {},
-                    child: Text(
-                      AppString.create,
-                      style: FontManager.loginStyle.copyWith(
-                        color: AppColors.login,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-          const Spacer(flex: 3),
           Align(
             alignment: Alignment.bottomLeft,
             child: SvgPicture.asset(SvgAssets.bottom, fit: BoxFit.contain),

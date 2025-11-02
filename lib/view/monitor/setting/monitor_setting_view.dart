@@ -4,8 +4,12 @@ import 'package:parker_touch/core/constants/app_colors.dart';
 import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
+import 'package:parker_touch/view/choose%20user/choose_user.dart';
 import 'package:parker_touch/view/monitor/edit_profile/edit_profile.dart';
 import 'package:parker_touch/view/monitor/privacy_setting/privacy_setting.dart';
+import 'package:parker_touch/view/patient/settings/potient_setting.dart';
+import 'package:parker_touch/view/patient/settings/privacy_policy.dart';
+import 'package:parker_touch/view/patient/settings/team_condition.dart';
 
 class MonitorSettingView extends StatefulWidget {
   const MonitorSettingView({super.key});
@@ -144,6 +148,14 @@ class _MonitorSettingViewState extends State<MonitorSettingView> {
                       title: "Privacy policy",
                       color: AppColors.black1,
                       iconColor: AppColors.black1,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const PrivacyPolicy(),
+                          ),
+                        );
+                      },
                     ),
                     AppSpacing.h6,
                     Divider(),
@@ -152,6 +164,14 @@ class _MonitorSettingViewState extends State<MonitorSettingView> {
                       title: 'Terms of service',
                       color: AppColors.black1,
                       iconColor: AppColors.black1,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const TeamCondition(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -162,6 +182,12 @@ class _MonitorSettingViewState extends State<MonitorSettingView> {
                 leftIcon: 'assets/icons/logout.png',
                 bgColor: Color(0xfffec3c9),
                 textColor: AppColors.cColor2,
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (_) => ChooseUser()),
+                  );
+                },
               ),
               AppSpacing.h18,
             ],
@@ -269,36 +295,36 @@ class ContainerRowButton extends StatelessWidget {
   }
 }
 
-class RowWidgetCart extends StatelessWidget {
-  const RowWidgetCart({
-    super.key,
-    required this.title,
-    this.color,
-    this.icon,
-    this.iconColor,
-    this.isSelected = true,
-  });
+// class RowWidgetCart extends StatelessWidget {
+//   const RowWidgetCart({
+//     super.key,
+//     required this.title,
+//     this.color,
+//     this.icon,
+//     this.iconColor,
+//     this.isSelected = true,
+//   });
 
-  final String title;
-  final Color? color;
-  final IconData? icon;
-  final Color? iconColor;
-  final bool isSelected;
+//   final String title;
+//   final Color? color;
+//   final IconData? icon;
+//   final Color? iconColor;
+//   final bool isSelected;
 
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: FontManager.loginStyle.copyWith(
-            color: color ?? AppColors.optBlue,
-          ),
-        ),
-        if (isSelected != false)
-          Icon(Icons.arrow_forward_ios, color: iconColor ?? AppColors.optBlue),
-      ],
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Row(
+//       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//       children: [
+//         Text(
+//           title,
+//           style: FontManager.loginStyle.copyWith(
+//             color: color ?? AppColors.optBlue,
+//           ),
+//         ),
+//         if (isSelected != false)
+//           Icon(Icons.arrow_forward_ios, color: iconColor ?? AppColors.optBlue),
+//       ],
+//     );
+//   }
+// }

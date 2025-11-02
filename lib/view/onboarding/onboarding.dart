@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:parker_touch/core/constants/app_colors.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/view/choose%20user/choose_user.dart';
@@ -33,7 +34,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
         curve: Curves.easeInOut,
       );
     } else {
-      // Navigate to choose user screen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const ChooseUser()),
@@ -64,10 +64,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           _buildDots(),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24.0,
-                vertical: 24,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 24.h),
               child: CustomButton(
                 onTap: _next,
                 text: _index == _pages.length - 1 ? 'Get Started' : 'Next',
@@ -87,12 +84,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
         _pages.length,
         (i) => AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          margin: const EdgeInsets.symmetric(horizontal: 6),
-          width: _index == i ? 40 : 12,
-          height: 12,
+          margin: EdgeInsets.symmetric(horizontal: 6.w),
+          width: _index == i ? 40.w : 12.w,
+          height: 12.h,
           decoration: BoxDecoration(
             color: _index == i ? AppColors.primaryColor : Colors.grey[400],
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(8.r),
           ),
         ),
       ),

@@ -5,6 +5,7 @@ import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/back_button.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/view/monitor/connect_potient/medicine_potient.dart';
+import 'package:parker_touch/view/patient/medicines/medicines_view.dart';
 
 class ConfirmMedicine extends StatelessWidget {
   const ConfirmMedicine({super.key});

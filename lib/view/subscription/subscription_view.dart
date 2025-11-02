@@ -15,7 +15,7 @@ class SubscriptionView extends StatefulWidget {
 }
 
 class _SubscriptionViewState extends State<SubscriptionView> {
-  int _selectedCardIndex = -1; // No card selected by default
+  int _selectedCardIndex = 0; // First card selected by default
 
   @override
   Widget build(BuildContext context) {

@@ -5,7 +5,7 @@ import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/header_section.dart';
 import 'package:parker_touch/view/monitor/connect_potient/medicine_potient.dart';
-import 'package:parker_touch/view/patient/add_medicine/add_manually_screen.dart';
+import 'package:parker_touch/view/patient/add_medicine/add_medicine.dart';
 
 class MedicinesView extends StatelessWidget {
   const MedicinesView({super.key});
@@ -38,7 +38,7 @@ class MedicinesView extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const AddManuallyScreen(),
+                                builder: (_) => const AddMedicine(),
                               ),
                             );
                           },

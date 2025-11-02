@@ -15,23 +15,23 @@ class OnboardingScreen3 extends StatelessWidget {
       children: [
         SizedBox(
           width: double.infinity,
-          child: Image.asset(
-          ImageAssets.onboardingThree,
-          fit: BoxFit.cover,
-                ),
+          child: Image.asset(ImageAssets.onboardingThree, fit: BoxFit.cover),
         ),
-      Text(
+        Text(
           AppString.onboardingTitleThree,
-          style: FontManager.titleStyle.copyWith(color: AppColors.black, fontWeight: FontWeight.w400),
+          style: FontManager.titleStyle.copyWith(
+            color: AppColors.black,
+            fontWeight: FontWeight.w400,
+          ),
           textAlign: TextAlign.center,
         ),
-      const SizedBox(height: 8),
-      Text(
-        AppString.onboardingSubTitleThree,
-        style: FontManager.subtitle.copyWith(color: AppColors.grey),
-        textAlign: TextAlign.center,
-      ),
-    ],
+        const SizedBox(height: 8),
+        Text(
+          AppString.onboardingSubTitleThree,
+          style: FontManager.subtitle.copyWith(color: AppColors.grey),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 }
