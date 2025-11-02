@@ -18,6 +18,7 @@ class SignupView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -38,96 +39,115 @@ class SignupView extends StatelessWidget {
 
           Positioned(
             top: 98.h,
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.92,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.loginCont.withValues(alpha: 0.6),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Color(0xffd6d9dd)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withValues(alpha: 0.3),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
+            bottom: 0,
+            left: 0,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(AppString.createAccount, style: FontManager.titleStyle),
-                  Text(
-                    AppString.singUp,
-                    style: FontManager.subtitle.copyWith(color: AppColors.grey),
-                  ),
-                  AppSpacing.h12,
-                  CustomTextfield(
-                    text: AppString.fullName,
-                    hintText: AppString.hintFullName,
-                  ),
-                  CustomTextfield(
-                    text: AppString.email,
-                    hintText: AppString.hintEmailAddress,
-                  ),
-                  CustomTextfield(
-                    text: AppString.age,
-                    hintText: AppString.hintEmailAddress,
-                  ),
-                  CustomTextfield(
-                    text: AppString.password,
-                    hintText: AppString.hintPassword,
-                    icon: Icons.visibility_outlined,
-                    obscureText: true,
-                  ),
-                  CustomTextfield(
-                    text: AppString.confirmPassword,
-                    hintText: AppString.hintPassword,
-                    icon: Icons.visibility_outlined,
-                    obscureText: true,
-                  ),
-                  AppSpacing.h10,
-                  CustomButton(
-                    text: "Sign Up",
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              const OtpVerification(source: OtpSource.signup),
-                        ),
-                      );
-                    },
-                  ),
-                  AppSpacing.h10,
-                  Align(
-                    child: Text(
-                      AppString.patient,
-                      style: FontManager.loginStyle.copyWith(
-                        color: AppColors.patient,
-                        fontSize: 14.sp,
-                      ),
-                      textAlign: TextAlign.center,
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.92,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.loginCont.withValues(alpha: 0.6),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Color(0xffd6d9dd)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withValues(alpha: 0.3),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
                     ),
-                  ),
-                  Align(
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const LoginView()),
-                        );
-                      },
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppString.createAccount,
+                      style: FontManager.titleStyle,
+                    ),
+                    Text(
+                      AppString.singUp,
+                      style: FontManager.subtitle.copyWith(
+                        color: AppColors.grey,
+                      ),
+                    ),
+                    AppSpacing.h12,
+                    Column(
+                      children: [
+                        CustomTextfield(
+                          text: AppString.fullName,
+                          hintText: AppString.hintFullName,
+                        ),
+                        CustomTextfield(
+                          text: AppString.email,
+                          hintText: AppString.hintEmailAddress,
+                        ),
+                        CustomTextfield(
+                          text: AppString.age,
+                          hintText: AppString.hintEmailAddress,
+                        ),
+                        CustomTextfield(
+                          text: AppString.password,
+                          hintText: AppString.hintPassword,
+                          icon: Icons.visibility_outlined,
+                          obscureText: true,
+                        ),
+                        CustomTextfield(
+                          text: AppString.confirmPassword,
+                          hintText: AppString.hintPassword,
+                          icon: Icons.visibility_outlined,
+                          obscureText: true,
+                        ),
+                        AppSpacing.h10,
+                        CustomButton(
+                          text: "Sign Up",
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const OtpVerification(
+                                  source: OtpSource.signup,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    AppSpacing.h10,
+                    Align(
                       child: Text(
-                        AppString.loginHere,
+                        AppString.patient,
                         style: FontManager.loginStyle.copyWith(
-                          color: AppColors.login,
+                          color: AppColors.patient,
+                          fontSize: 14.sp,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Align(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const LoginView(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          AppString.loginHere,
+                          style: FontManager.loginStyle.copyWith(
+                            color: AppColors.login,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

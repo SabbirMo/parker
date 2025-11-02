@@ -156,7 +156,7 @@ class MedicineCart extends StatelessWidget {
               Text(
                 medicineName,
                 style: FontManager.contTitle.copyWith(
-                  fontSize: 16.sp,
+                  fontSize: 14.sp,
                   color: AppColors.black1,
                 ),
               ),

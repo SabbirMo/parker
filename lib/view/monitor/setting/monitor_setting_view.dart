@@ -20,150 +20,152 @@ class _MonitorSettingViewState extends State<MonitorSettingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AppSpacing.h40,
-            Text('Settings', style: FontManager.connect),
-            AppSpacing.h10,
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const EditProfile()),
-                );
-              },
-              child: Container(
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16.r),
-                  border: Border.all(width: 1, color: AppColors.borderColor),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppSpacing.h40,
+              Text('Settings', style: FontManager.connect),
+              AppSpacing.h10,
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const EditProfile()),
+                  );
+                },
+                child: Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16.r),
+                    border: Border.all(width: 1, color: AppColors.borderColor),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.withValues(alpha: 0.2),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Image.asset('assets/icons/person.png'),
+                            ),
+                          ),
+                          AppSpacing.w20,
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Enola Parker",
+                                  style: FontManager.loginStyle.copyWith(
+                                    fontSize: 20.sp,
+                                    color: AppColors.black1,
+                                  ),
+                                ),
+                                Text(
+                                  'enola@gmail.com',
+                                  style: FontManager.contSubTitle,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      AppSpacing.h14,
+                      RowWidgetCart(title: "Edit Profile"),
+                    ],
+                  ),
                 ),
+              ),
+
+              AppSpacing.h14,
+              ContainerRowButton(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const PrivacySetting()),
+                  );
+                },
+                child: RowWidgetCart(
+                  title: "Privacy Setting",
+                  color: AppColors.black1,
+                  isSelected: false,
+                ),
+              ),
+              AppSpacing.h14,
+              ContainerRowButton(
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Row(
                       children: [
-                        Container(
-                          padding: EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.withValues(alpha: 0.2),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: Image.asset('assets/icons/person.png'),
-                          ),
-                        ),
-                        AppSpacing.w20,
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Enola Parker",
-                                style: FontManager.loginStyle.copyWith(
-                                  fontSize: 20.sp,
-                                  color: AppColors.black1,
-                                ),
-                              ),
-                              Text(
-                                'enola@gmail.com',
-                                style: FontManager.contSubTitle,
-                              ),
-                            ],
+                        Image.asset('assets/icons/notification.png'),
+                        AppSpacing.w8,
+                        Text(
+                          'Notifications',
+                          style: FontManager.loginStyle.copyWith(
+                            fontSize: 20.sp,
+                            color: AppColors.black1,
                           ),
                         ),
                       ],
                     ),
-                    AppSpacing.h14,
-                    RowWidgetCart(title: "Edit Profile"),
+                    AppSpacing.h10,
+                    switchNotification(
+                      'Push notification',
+                      'Receive medication reminder',
+                      pushNotification,
+                      (value) => setState(() => pushNotification = value),
+                    ),
+                    AppSpacing.h6,
+                    Divider(),
+                    AppSpacing.h6,
+                    switchNotification(
+                      'Voice reminder',
+                      'AI voice notification',
+                      voiceNotification,
+                      (value) => setState(() => voiceNotification = value),
+                    ),
                   ],
                 ),
               ),
-            ),
-
-            AppSpacing.h14,
-            ContainerRowButton(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const PrivacySetting()),
-                );
-              },
-              child: RowWidgetCart(
-                title: "Privacy Setting",
-                color: AppColors.black1,
-                isSelected: false,
+              AppSpacing.h14,
+              ContainerRowButton(
+                child: Column(
+                  children: [
+                    RowWidgetCart(
+                      title: "Privacy policy",
+                      color: AppColors.black1,
+                      iconColor: AppColors.black1,
+                    ),
+                    AppSpacing.h6,
+                    Divider(),
+                    AppSpacing.h6,
+                    RowWidgetCart(
+                      title: 'Terms of service',
+                      color: AppColors.black1,
+                      iconColor: AppColors.black1,
+                    ),
+                  ],
+                ),
               ),
-            ),
-            AppSpacing.h14,
-            ContainerRowButton(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      Image.asset('assets/icons/notification.png'),
-                      AppSpacing.w8,
-                      Text(
-                        'Notifications',
-                        style: FontManager.loginStyle.copyWith(
-                          fontSize: 20.sp,
-                          color: AppColors.black1,
-                        ),
-                      ),
-                    ],
-                  ),
-                  AppSpacing.h10,
-                  switchNotification(
-                    'Push notification',
-                    'Receive medication reminder',
-                    pushNotification,
-                    (value) => setState(() => pushNotification = value),
-                  ),
-                  AppSpacing.h6,
-                  Divider(),
-                  AppSpacing.h6,
-                  switchNotification(
-                    'Voice reminder',
-                    'AI voice notification',
-                    voiceNotification,
-                    (value) => setState(() => voiceNotification = value),
-                  ),
-                ],
+              AppSpacing.h32,
+              CustomButton(
+                text: "LogOut",
+                leftIcon: 'assets/icons/logout.png',
+                bgColor: Color(0xfffec3c9),
+                textColor: AppColors.cColor2,
               ),
-            ),
-            AppSpacing.h14,
-            ContainerRowButton(
-              child: Column(
-                children: [
-                  RowWidgetCart(
-                    title: "Privacy policy",
-                    color: AppColors.black1,
-                    iconColor: AppColors.black1,
-                  ),
-                  AppSpacing.h6,
-                  Divider(),
-                  AppSpacing.h6,
-                  RowWidgetCart(
-                    title: 'Terms of service',
-                    color: AppColors.black1,
-                    iconColor: AppColors.black1,
-                  ),
-                ],
-              ),
-            ),
-            AppSpacing.h32,
-            CustomButton(
-              text: "LogOut",
-              leftIcon: 'assets/icons/logout.png',
-              bgColor: Color(0xfffec3c9),
-              textColor: AppColors.cColor2,
-            ),
-            AppSpacing.h18,
-          ],
+              AppSpacing.h18,
+            ],
+          ),
         ),
       ),
     );

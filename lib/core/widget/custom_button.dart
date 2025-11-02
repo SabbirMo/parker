@@ -16,6 +16,7 @@ class CustomButton extends StatelessWidget {
     this.width,
     this.textColor,
     this.iconColor,
+    this.isBoxShadow = true,
   });
   final VoidCallback? onTap;
   final String text;
@@ -27,6 +28,7 @@ class CustomButton extends StatelessWidget {
   final double? width;
   final Color? textColor;
   final Color? iconColor;
+  final bool isBoxShadow;
 
   @override
   Widget build(BuildContext context) {
@@ -40,14 +42,16 @@ class CustomButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(14.r),
           border: border,
           boxShadow: [
-            BoxShadow(
-              color:
-                  boxShadowColor ??
-                  AppColors.primaryColor.withValues(alpha: 0.25),
-              spreadRadius: 2,
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
+            isBoxShadow
+                ? BoxShadow(
+                    color:
+                        boxShadowColor ??
+                        AppColors.primaryColor.withValues(alpha: 0.25),
+                    spreadRadius: 2,
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  )
+                : BoxShadow(color: Colors.transparent),
           ],
         ),
         child: Row(

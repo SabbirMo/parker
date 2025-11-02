@@ -12,6 +12,7 @@ class FontManager {
   static const FontWeight w400 = FontWeight.w400;
   static const FontWeight w500 = FontWeight.w500;
   static const FontWeight w600 = FontWeight.w600;
+  static const FontWeight w700 = FontWeight.w700;
 
   static TextStyle titleStyle = TextStyle(
     fontFamily: poppins,
@@ -114,6 +115,20 @@ class FontManager {
     fontFamily: poppins,
     fontSize: 14.sp,
     fontWeight: w400,
+    color: AppColors.black1,
+  );
+
+  static TextStyle bodyText8 = TextStyle(
+    fontFamily: nunito,
+    fontSize: 32.sp,
+    fontWeight: w700,
+    color: AppColors.black1,
+  );
+
+  static TextStyle bodyText9 = TextStyle(
+    fontFamily: poppins,
+    fontSize: 20.sp,
+    fontWeight: w600,
     color: AppColors.black1,
   );
 }

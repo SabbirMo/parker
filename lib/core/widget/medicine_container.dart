@@ -5,6 +5,7 @@ import 'package:parker_touch/core/constants/app_colors.dart';
 import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
+import 'package:parker_touch/core/widget/show_dialog_widget.dart';
 
 class MedicineContainer extends StatefulWidget {
   final VoidCallback? onTakeMedicine;
@@ -118,9 +119,21 @@ class _MedicineContainerState extends State<MedicineContainer> {
                 textColor: AppColors.login,
                 bgColor: Color(0xffedf5fe),
                 border: Border.all(width: 1, color: AppColors.login),
-                width: 167,
+                width: 140.w,
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) {
+                      return ShowDialogWidget();
+                    },
+                  );
+                },
               ),
-              CustomButton(text: "TAKE NOW", width: 167, onTap: _takeMedicine),
+              CustomButton(
+                text: "TAKE NOW",
+                width: 140.w,
+                onTap: _takeMedicine,
+              ),
             ],
           ),
         ],

@@ -18,120 +18,133 @@ class MonitorSignUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      resizeToAvoidBottomInset: false,
+      body: Stack(
         children: [
-          Stack(
-            children: [
-              Align(
-                alignment: Alignment.centerRight,
-                child: SvgPicture.asset(
-                  SvgAssets.top,
-                  fit: BoxFit.contain,
-                  width: MediaQuery.of(context).size.width * 0.4,
-                ),
-              ),
-
-              Positioned(top: 50, left: 20, child: CustomBackButton()),
-            ],
+          Align(
+            alignment: Alignment.topRight,
+            child: SvgPicture.asset(
+              SvgAssets.top,
+              fit: BoxFit.contain,
+              width: MediaQuery.of(context).size.width * 0.4,
+            ),
           ),
 
-          AppSpacing.h10,
-          Expanded(
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.92,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.loginCont,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Color(0xffd6d9dd)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withValues(alpha: 0.3),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
+          const Positioned(top: 50, left: 20, child: CustomBackButton()),
+
+          Positioned(
+            top: 98.h,
+            left: 0,
+            bottom: 0,
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(AppString.createAccount, style: FontManager.titleStyle),
-                  Text(
-                    AppString.monitorSingUp,
-                    style: FontManager.subtitle.copyWith(color: AppColors.grey),
-                  ),
-                  AppSpacing.h12,
-                  CustomTextfield(
-                    text: AppString.fullName,
-                    hintText: AppString.hintFullName,
-                  ),
-                  CustomTextfield(
-                    text: AppString.email,
-                    hintText: AppString.hintEmailAddress,
-                  ),
-                  CustomTextfield(
-                    text: AppString.password,
-                    hintText: AppString.hintPassword,
-                    icon: Icons.visibility_outlined,
-                    obscureText: true,
-                  ),
-                  CustomTextfield(
-                    text: AppString.confirmPassword,
-                    hintText: AppString.hintPassword,
-                    icon: Icons.visibility_outlined,
-                    obscureText: true,
-                  ),
-                  AppSpacing.h10,
-                  CustomButton(
-                    text: "Sign Up",
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              const OtpVerification(source: OtpSource.signup),
-                        ),
-                      );
-                    },
-                  ),
-                  AppSpacing.h10,
-                  Align(
-                    child: Text(
-                      AppString.patient,
-                      style: FontManager.loginStyle.copyWith(
-                        color: AppColors.patient,
-                        fontSize: 14.sp,
-                      ),
-                      textAlign: TextAlign.center,
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.92,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.loginCont,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xffd6d9dd)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withValues(alpha: 0.3),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
                     ),
-                  ),
-                  AppSpacing.h2,
-                  Align(
-                    child: InkWell(
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppString.createAccount,
+                      style: FontManager.titleStyle,
+                    ),
+                    Text(
+                      AppString.monitorSingUp,
+                      style: FontManager.subtitle.copyWith(
+                        color: AppColors.grey,
+                      ),
+                    ),
+                    AppSpacing.h12,
+                    CustomTextfield(
+                      text: AppString.fullName,
+                      hintText: AppString.hintFullName,
+                    ),
+                    CustomTextfield(
+                      text: AppString.email,
+                      hintText: AppString.hintEmailAddress,
+                    ),
+                    CustomTextfield(
+                      text: AppString.password,
+                      hintText: AppString.hintPassword,
+                      icon: Icons.visibility_outlined,
+                      obscureText: true,
+                    ),
+                    CustomTextfield(
+                      text: AppString.confirmPassword,
+                      hintText: AppString.hintPassword,
+                      icon: Icons.visibility_outlined,
+                      obscureText: true,
+                    ),
+                    AppSpacing.h10,
+                    CustomButton(
+                      text: "Sign Up",
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const LoginView()),
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                const OtpVerification(source: OtpSource.signup),
+                          ),
                         );
                       },
+                    ),
+                    AppSpacing.h10,
+                    Align(
                       child: Text(
-                        AppString.loginHere,
+                        AppString.patient,
                         style: FontManager.loginStyle.copyWith(
-                          color: AppColors.login,
+                          color: AppColors.patient,
+                          fontSize: 14.sp,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    AppSpacing.h2,
+                    Align(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const LoginView(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          AppString.loginHere,
+                          style: FontManager.loginStyle.copyWith(
+                            color: AppColors.login,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: SvgPicture.asset(SvgAssets.bottom, fit: BoxFit.contain),
+
+          Positioned(
+            bottom: 0,
+            left: 0,
+            child: IgnorePointer(
+              child: SvgPicture.asset(SvgAssets.bottom, fit: BoxFit.contain),
+            ),
           ),
         ],
       ),

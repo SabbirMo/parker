@@ -57,14 +57,7 @@ class ConntextPotientSend extends StatelessWidget {
               AppSpacing.h32,
               CustomButton(
                 text: 'Send Request',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MedicinePotient(email: email),
-                    ),
-                  );
-                },
+                onTap: () {},
                 leftIcon: 'assets/icons/send.png',
               ),
             ],

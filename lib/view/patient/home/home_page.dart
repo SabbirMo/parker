@@ -11,6 +11,7 @@ import 'package:parker_touch/core/widget/header_section.dart';
 import 'package:parker_touch/core/widget/medicine_container.dart';
 import 'package:parker_touch/core/widget/progress_bar_widget.dart';
 import 'package:parker_touch/core/widget/show_dialog_widget.dart';
+import 'package:parker_touch/view/patient/add_medicine/add_manually_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -96,11 +97,11 @@ class _HomePageState extends State<HomePage> {
                         rightIcon: Icons.add,
                         iconColor: AppColors.login,
                         onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (_) {
-                              return ShowDialogWidget();
-                            },
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddManuallyScreen(),
+                            ),
                           );
                         },
                       ),

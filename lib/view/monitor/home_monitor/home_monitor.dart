@@ -6,6 +6,7 @@ import 'package:parker_touch/core/constants/app_string.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/header_section.dart';
 import 'package:parker_touch/core/widget/progress_bar_widget.dart';
+import 'package:parker_touch/view/monitor/connect_potient/medicine_potient.dart';
 
 class HomeMonitor extends StatelessWidget {
   const HomeMonitor({super.key});
@@ -169,7 +170,12 @@ class PatientCard extends StatelessWidget {
                 ),
           AppSpacing.h16,
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MedicinePotient()),
+              );
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

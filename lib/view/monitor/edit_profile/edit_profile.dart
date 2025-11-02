@@ -92,37 +92,47 @@ class _EditProfileState extends State<EditProfile> {
                 ),
               ),
               AppSpacing.h12,
-              CustomTextfield(
-                text: 'Full Name',
-                hintText: 'Enola Parker',
-                borderColor: AppColors.textFieldBorderColor,
-                bgColor: AppColors.textFieldBgColor,
-              ),
-              AppSpacing.h4,
-              CustomTextfield(
-                text: 'Email',
-                hintText: 'example@email.com',
-                borderColor: AppColors.textFieldBorderColor,
-                bgColor: AppColors.textFieldBgColor,
-              ),
-              AppSpacing.h4,
-              CustomTextfield(
-                text: 'Age',
-                hintText: '27 years old',
-                borderColor: AppColors.textFieldBorderColor,
-                bgColor: AppColors.textFieldBgColor,
-              ),
-              AppSpacing.h4,
-              CustomTextfield(
-                text: 'Account Type',
-                hintText: 'Monitor',
-                borderColor: AppColors.textFieldBorderColor,
-                bgColor: Color(0xff5E5D5D).withValues(alpha: 0.1),
-                enabled: false,
-              ),
-              AppSpacing.h38,
+              // Scrollable content section
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      CustomTextfield(
+                        text: 'Full Name',
+                        hintText: 'Enola Parker',
+                        borderColor: AppColors.textFieldBorderColor,
+                        bgColor: AppColors.textFieldBgColor,
+                      ),
+                      AppSpacing.h4,
+                      CustomTextfield(
+                        text: 'Email',
+                        hintText: 'example@email.com',
+                        borderColor: AppColors.textFieldBorderColor,
+                        bgColor: AppColors.textFieldBgColor,
+                      ),
+                      AppSpacing.h4,
+                      CustomTextfield(
+                        text: 'Age',
+                        hintText: '27 years old',
+                        borderColor: AppColors.textFieldBorderColor,
+                        bgColor: AppColors.textFieldBgColor,
+                      ),
+                      AppSpacing.h4,
+                      CustomTextfield(
+                        text: 'Account Type',
+                        hintText: 'Monitor',
+                        borderColor: AppColors.textFieldBorderColor,
+                        bgColor: Color(0xff5E5D5D).withValues(alpha: 0.1),
+                        enabled: false,
+                      ),
+                      AppSpacing.h38,
 
-              CustomButton(text: 'Save', onTap: () {}),
+                      CustomButton(text: 'Save', onTap: () {}),
+                      AppSpacing.h16, // Add some spacing at the bottom
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),

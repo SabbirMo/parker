@@ -62,14 +62,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
               children: _pages,
             ),
           ),
-          AppSpacing.h12,
           _buildDots(),
-          AppSpacing.h18,
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 24.0,
-                vertical: 12,
+                vertical: 24,
               ),
               child: CustomButton(
                 onTap: _next,

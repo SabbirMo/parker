@@ -15,15 +15,16 @@ class OnboardingScreen1 extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.asset(
-            ImageAssets.onboardingOne,
-            fit: BoxFit.cover,
-          ),
+          Image.asset(ImageAssets.onboardingOne, fit: BoxFit.cover),
           Text(
-              AppString.onboardingTitleOne,
-              style: FontManager.titleStyle.copyWith(color: AppColors.black, fontWeight: FontWeight.w400),
-              textAlign: TextAlign.center,
+            AppString.onboardingTitleOne,
+            style: FontManager.titleStyle.copyWith(
+              color: AppColors.black,
+              fontWeight: FontWeight.w400,
+              height: 1.2,
             ),
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 8),
           Text(
             AppString.onboardingSubTitleOne,

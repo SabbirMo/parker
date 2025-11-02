@@ -31,47 +31,60 @@ class AddManuallyScreen extends StatelessWidget {
                   color: Color(0xff303030),
                 ),
               ),
-
               AppSpacing.h12,
-              CustomTextfield(
-                text: "Medicine Name",
-                hintText: 'e.g. Tylenol',
-                borderColor: AppColors.textFieldBorderColor,
-                bgColor: AppColors.textFieldBgColor,
+              // Wrap the form fields in an Expanded widget with SingleChildScrollView
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomTextfield(
+                        text: "Medicine Name",
+                        hintText: 'e.g. Tylenol',
+                        borderColor: AppColors.textFieldBorderColor,
+                        bgColor: AppColors.textFieldBgColor,
+                      ),
+                      AppSpacing.h4,
+                      CustomTextfield(
+                        text: "Dosage",
+                        hintText: 'e.g. 500mg',
+                        borderColor: AppColors.textFieldBorderColor,
+                        bgColor: AppColors.textFieldBgColor,
+                      ),
+                      AppSpacing.h4,
+                      CustomTextfield(
+                        text: "How many days",
+                        hintText: 'e.g. 15 days',
+                        borderColor: AppColors.textFieldBorderColor,
+                        bgColor: AppColors.textFieldBgColor,
+                      ),
+                      AppSpacing.h4,
+                      CustomDropdown(
+                        text: "Frequency",
+                        hintText: 'Select frequency',
+                        items: [
+                          'Once a day',
+                          'Twice a day',
+                          'Three times a day',
+                        ],
+                        borderColor: AppColors.textFieldBorderColor,
+                        bgColor: AppColors.textFieldBgColor,
+                      ),
+                      AppSpacing.h4,
+                      CustomTextfield(
+                        text: "Time 1",
+                        hintText: '--/--/--',
+                        borderColor: AppColors.textFieldBorderColor,
+                        bgColor: AppColors.textFieldBgColor,
+                      ),
+                      // Replaced Spacer with a fixed height spacer for scrollable content
+                      AppSpacing.h24,
+                      CustomButton(text: 'Save Medicine', onTap: () {}),
+                      AppSpacing.h24,
+                    ],
+                  ),
+                ),
               ),
-              AppSpacing.h4,
-              CustomTextfield(
-                text: "Dosage",
-                hintText: 'e.g. 500mg',
-                borderColor: AppColors.textFieldBorderColor,
-                bgColor: AppColors.textFieldBgColor,
-              ),
-              AppSpacing.h4,
-              CustomTextfield(
-                text: "How many days",
-                hintText: 'e.g. 15 days',
-                borderColor: AppColors.textFieldBorderColor,
-                bgColor: AppColors.textFieldBgColor,
-              ),
-              AppSpacing.h4,
-              CustomDropdown(
-                text: "Frequency",
-                hintText: 'Select frequency',
-                items: ['Once a day', 'Twice a day', 'Three times a day'],
-                borderColor: AppColors.textFieldBorderColor,
-                bgColor: AppColors.textFieldBgColor,
-              ),
-              AppSpacing.h4,
-              CustomTextfield(
-                text: "Time 1",
-                hintText: '--/--/--',
-                borderColor: AppColors.textFieldBorderColor,
-                bgColor: AppColors.textFieldBgColor,
-              ),
-              Spacer(),
-
-              CustomButton(text: 'Save Medicine', onTap: () {}),
-              AppSpacing.h24,
             ],
           ),
         ),

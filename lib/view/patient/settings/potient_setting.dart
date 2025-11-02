@@ -8,6 +8,7 @@ import 'package:parker_touch/core/widget/free_trial_container.dart';
 import 'package:parker_touch/view/monitor/edit_profile/edit_profile.dart';
 import 'package:parker_touch/view/monitor/privacy_setting/privacy_setting.dart';
 import 'package:parker_touch/view/patient/settings/privacy_policy.dart';
+import 'package:parker_touch/view/patient/settings/team_condition.dart';
 
 class PotientSetting extends StatefulWidget {
   const PotientSetting({super.key});
@@ -164,6 +165,14 @@ class _PotientSettingState extends State<PotientSetting> {
                       title: 'Terms of service',
                       color: AppColors.black1,
                       iconColor: AppColors.black1,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const TeamCondition(),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

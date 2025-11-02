@@ -5,6 +5,7 @@ import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/core/widget/text_cart.dart';
+import 'package:parker_touch/view/subscription/subscription_view.dart';
 
 class FreeTrialContainer extends StatefulWidget {
   const FreeTrialContainer({super.key});
@@ -14,14 +15,6 @@ class FreeTrialContainer extends StatefulWidget {
 }
 
 class _FreeTrialContainerState extends State<FreeTrialContainer> {
-  bool _isTrialStarted = false;
-
-  void _startFreeTrial() {
-    setState(() {
-      _isTrialStarted = true;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -45,19 +38,16 @@ class _FreeTrialContainerState extends State<FreeTrialContainer> {
             ],
           ),
           AppSpacing.h10,
-          _isTrialStarted
-              ? Text(
-                  "Your Free Trial Ends in 7 days",
-                  style: FontManager.contTitle.copyWith(
-                    color: AppColors.optBlue,
-                    fontSize: 18.sp,
-                  ),
-                )
-              : CustomButton(
-                  text: "START FREE TRIAL",
-                  bgColor: AppColors.optBlue,
-                  onTap: _startFreeTrial,
-                ),
+          CustomButton(
+            text: "START FREE TRIAL",
+            bgColor: AppColors.optBlue,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SubscriptionView()),
+              );
+            },
+          ),
         ],
       ),
     );

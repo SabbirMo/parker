@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,10 +22,13 @@ class _ShowDialogWidgetState extends State<ShowDialogWidget> {
 
   Future<void> _openCamera() async {
     final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
-    if (photo != null) {
-      setState(() {
-        _image = photo;
-      });
+    if (photo != null && mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MedicineVerifyScreen(imagePath: photo.path),
+        ),
+      );
     }
   }
 
@@ -122,20 +127,17 @@ class _ShowDialogWidgetState extends State<ShowDialogWidget> {
             AppSpacing.h16,
             CustomButton(
               text: "TAKEN MEDICINE",
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AddMedicine()),
-                );
-              },
+              onTap: () {},
               bgColor: AppColors.green,
               leftIcon: 'assets/icons/right.png',
+              isBoxShadow: false,
             ),
             AppSpacing.h10,
             CustomButton(
               text: "MATCH MEDICINE",
               onTap: _openCamera,
               leftIcon: 'assets/icons/camera.png',
+              isBoxShadow: false,
             ),
             AppSpacing.h20,
             Align(
@@ -149,6 +151,112 @@ class _ShowDialogWidgetState extends State<ShowDialogWidget> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class MedicineVerifyScreen extends StatelessWidget {
+  final String imagePath;
+  const MedicineVerifyScreen({super.key, required this.imagePath});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF072B4E),
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
+
+              // Header Row
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "Verify Your Medicine",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close, color: Colors.white70),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              // Image Preview Box
+              Container(
+                width: 250,
+                height: 300,
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.white24, width: 2),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.file(File(imagePath), fit: BoxFit.cover),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Match Info
+              Column(
+                children: const [
+                  Icon(Icons.check_circle, color: Colors.green, size: 40),
+                  SizedBox(height: 8),
+                  Text(
+                    "Perfect match!",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  Text(
+                    "That is correct medicine!",
+                    style: TextStyle(color: Colors.white70, fontSize: 13),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              const Text(
+                "Verifying : Aspirin (50 mg)",
+                style: TextStyle(color: Colors.white70, fontSize: 13),
+              ),
+
+              const SizedBox(height: 25),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: CustomButton(
+                  text: "CONFIRM & TAKEN MEDICINE",
+                  bgColor: AppColors.green,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const AddMedicine()),
+                    );
+                  },
+                  isBoxShadow: false,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
