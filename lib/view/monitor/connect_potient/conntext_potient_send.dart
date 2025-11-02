@@ -5,7 +5,6 @@ import 'package:parker_touch/core/constants/app_string.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/back_button.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
-import 'package:parker_touch/view/monitor/connect_potient/medicine_potient.dart';
 
 class ConntextPotientSend extends StatelessWidget {
   const ConntextPotientSend({super.key, this.email});

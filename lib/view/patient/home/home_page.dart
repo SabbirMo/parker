@@ -10,7 +10,6 @@ import 'package:parker_touch/core/widget/free_trial_container.dart';
 import 'package:parker_touch/core/widget/header_section.dart';
 import 'package:parker_touch/core/widget/medicine_container.dart';
 import 'package:parker_touch/core/widget/progress_bar_widget.dart';
-import 'package:parker_touch/core/widget/show_dialog_widget.dart';
 import 'package:parker_touch/view/patient/add_medicine/add_manually_screen.dart';
 
 class HomePage extends StatefulWidget {

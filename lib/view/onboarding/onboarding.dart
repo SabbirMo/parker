@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:parker_touch/core/constants/app_colors.dart';
-import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/view/choose%20user/choose_user.dart';
 import 'onboarding_screen1.dart';
