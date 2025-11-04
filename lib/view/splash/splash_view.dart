@@ -28,7 +28,7 @@ class _SplashViewState extends State<SplashView> {
   @override
   void initState() {
     super.initState();
-    _dotTimer = Timer.periodic(const Duration(microseconds: 500), (timer) {
+    _dotTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
       setState(() {
         activeDot = (activeDot + 1) % 3;
       });
@@ -52,36 +52,35 @@ class _SplashViewState extends State<SplashView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     body: Container(
-      width: double.infinity,
-      height: double.infinity, 
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomRight,
-          colors: [
-          AppColors.linerColorStart,
-          AppColors.linerColorEnd,
-          ],
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomRight,
+            colors: [AppColors.linerColorStart, AppColors.linerColorEnd],
+          ),
         ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            IconAssets.splashLogo,
-            width: 130.w,
-            height: 130.h,
-          ),
-          AppSpacing.h22,
-          Text(
-            AppString.appName,
-            style: FontManager.titleStyle.copyWith(fontSize: 26.sp, color: AppColors.white),
-          ),
-          
-          Text(AppString.splashSubtitle, style: FontManager.subtitle.copyWith(color: AppColors.white)),
-          AppSpacing.h36,
-          Row(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(IconAssets.splashLogo, width: 130.w, height: 130.h),
+            AppSpacing.h22,
+            Text(
+              AppString.appName,
+              style: FontManager.titleStyle.copyWith(
+                fontSize: 26.sp,
+                color: AppColors.white,
+              ),
+            ),
+
+            Text(
+              AppString.splashSubtitle,
+              style: FontManager.subtitle.copyWith(color: AppColors.white),
+            ),
+            AppSpacing.h36,
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(3, (index) {
                 return AnimatedContainer(
@@ -91,16 +90,16 @@ class _SplashViewState extends State<SplashView> {
                   width: 10,
                   decoration: BoxDecoration(
                     color: activeDot == index
-                        ? AppColors.white.withValues(alpha:  0.1)
+                        ? AppColors.white.withValues(alpha: 0.1)
                         : AppColors.white,
                     shape: BoxShape.circle,
                   ),
                 );
               }),
             ),
-        ],
+          ],
+        ),
       ),
-     ),
     );
   }
 }

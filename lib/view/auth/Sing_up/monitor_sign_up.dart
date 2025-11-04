@@ -44,7 +44,7 @@ class MonitorSignUp extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 0.92,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.loginCont,
+                  color: AppColors.loginCont.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: const Color(0xffd6d9dd)),
                   boxShadow: [

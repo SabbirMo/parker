@@ -33,16 +33,28 @@ class OnboardingScreen2 extends StatelessWidget {
                 children: [
                   Text(
                     AppString.onboardingTitleTwo,
-                    style: FontManager.titleStyle.copyWith(
-                      color: AppColors.black,
-                      fontWeight: FontWeight.w400,
-                    ),
+                    style: FontManager.titleStyle
+                        .copyWith(
+                          color: AppColors.black,
+                          fontWeight: FontWeight.w400,
+                        )
+                        .merge(
+                          const TextStyle(
+                            fontFamilyFallback: ['Poppins', 'sans-serif'],
+                          ),
+                        ),
                     textAlign: TextAlign.center,
                   ),
                   AppSpacing.h8,
                   Text(
                     AppString.onboardingSubTitleTwo,
-                    style: FontManager.subtitle.copyWith(color: AppColors.grey),
+                    style: FontManager.subtitle
+                        .copyWith(color: AppColors.grey)
+                        .merge(
+                          const TextStyle(
+                            fontFamilyFallback: ['Nunito', 'sans-serif'],
+                          ),
+                        ),
                     textAlign: TextAlign.center,
                   ),
                 ],

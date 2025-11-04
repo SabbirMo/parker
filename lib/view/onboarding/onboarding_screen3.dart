@@ -19,16 +19,21 @@ class OnboardingScreen3 extends StatelessWidget {
         ),
         Text(
           AppString.onboardingTitleThree,
-          style: FontManager.titleStyle.copyWith(
-            color: AppColors.black,
-            fontWeight: FontWeight.w400,
-          ),
+          style: FontManager.titleStyle
+              .copyWith(color: AppColors.black, fontWeight: FontWeight.w400)
+              .merge(
+                const TextStyle(fontFamilyFallback: ['Poppins', 'sans-serif']),
+              ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 8),
         Text(
           AppString.onboardingSubTitleThree,
-          style: FontManager.subtitle.copyWith(color: AppColors.grey),
+          style: FontManager.subtitle
+              .copyWith(color: AppColors.grey)
+              .merge(
+                const TextStyle(fontFamilyFallback: ['Nunito', 'sans-serif']),
+              ),
           textAlign: TextAlign.center,
         ),
       ],

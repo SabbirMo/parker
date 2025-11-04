@@ -16,90 +16,86 @@ class ForgotPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            children: [
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: CustomBackButton(),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: Column(
+          children: [
+            SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: CustomBackButton(),
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Reset Password",
+                    style: FontManager.loginStyle.copyWith(
+                      fontSize: 20.sp,
+                      color: Colors.black,
+                    ),
                   ),
-                  Align(
-                    alignment: Alignment.center,
+                ),
+              ],
+            ),
+            const Spacer(flex: 2),
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    AppString.forgot,
+                    style: FontManager.contTitle.copyWith(
+                      fontSize: 24,
+                      color: AppColors.login,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    AppString.resMessage,
+                    style: FontManager.subtitle.copyWith(
+                      color: AppColors.patient,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  AppSpacing.h24,
+                  CustomTextfield(text: "Email", hintText: 'someone@gmail.com'),
+                  AppSpacing.h24,
+                  CustomButton(
+                    text: "Send",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              const OtpVerification(source: OtpSource.send),
+                        ),
+                      );
+                    },
+                  ),
+                  AppSpacing.h24,
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginView()),
+                      );
+                    },
                     child: Text(
-                      "Reset Password",
-                      style: FontManager.loginStyle.copyWith(
-                        fontSize: 20.sp,
-                        color: Colors.black,
+                      "Back to Login",
+                      style: FontManager.subtitle.copyWith(
+                        color: AppColors.optBlue,
                       ),
                     ),
                   ),
                 ],
               ),
-              const Spacer(flex: 2),
-              Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      AppString.forgot,
-                      style: FontManager.contTitle.copyWith(
-                        fontSize: 24,
-                        color: AppColors.login,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: 12),
-                    Text(
-                      AppString.resMessage,
-                      style: FontManager.subtitle.copyWith(
-                        color: AppColors.patient,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    AppSpacing.h24,
-                    CustomTextfield(
-                      text: "Email",
-                      hintText: 'someone@gmail.com',
-                    ),
-                    AppSpacing.h24,
-                    CustomButton(
-                      text: "Send",
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                const OtpVerification(source: OtpSource.send),
-                          ),
-                        );
-                      },
-                    ),
-                    AppSpacing.h24,
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const LoginView()),
-                        );
-                      },
-                      child: Text(
-                        "Back to Login",
-                        style: FontManager.subtitle.copyWith(
-                          color: AppColors.optBlue,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Spacer(flex: 3),
-            ],
-          ),
+            ),
+            const Spacer(flex: 3),
+          ],
         ),
       ),
     );

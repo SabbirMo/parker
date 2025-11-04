@@ -51,125 +51,120 @@ class _OtpVerificationState extends State<OtpVerification> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: CustomBackButton(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: CustomBackButton(),
+            ),
+            Image.asset(
+              ImageAssets.otp,
+              width: 291.w,
+              height: 291,
+              fit: BoxFit.cover,
+            ),
+            Text(
+              AppString.otp,
+              style: FontManager.titleStyle.copyWith(
+                color: AppColors.primaryColor,
               ),
-              Image.asset(
-                ImageAssets.otp,
-                width: 291.w,
-                height: 291,
-                fit: BoxFit.cover,
+            ),
+            Text(
+              AppString.otpMsg,
+              style: FontManager.subtitle.copyWith(
+                color: AppColors.optColor,
+                fontSize: 14.sp,
               ),
-              Text(
-                AppString.otp,
-                style: FontManager.titleStyle.copyWith(
-                  color: AppColors.primaryColor,
-                ),
-              ),
-              Text(
-                AppString.otpMsg,
-                style: FontManager.subtitle.copyWith(
-                  color: AppColors.optColor,
-                  fontSize: 14.sp,
-                ),
-              ),
-              Text(
-                AppString.otpMail,
-                style: FontManager.subtitle.copyWith(fontSize: 14.sp),
-              ),
-              AppSpacing.h20,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  5,
-                  (index) => Container(
-                    margin: EdgeInsets.symmetric(horizontal: 10.w),
-                    width: 45.w,
-                    height: 40.h,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(width: 1),
+            ),
+            Text(
+              AppString.otpMail,
+              style: FontManager.subtitle.copyWith(fontSize: 14.sp),
+            ),
+            AppSpacing.h20,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                5,
+                (index) => Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10.w),
+                  width: 45.w,
+                  height: 40.h,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(width: 1),
+                  ),
+                  child: TextField(
+                    controller: _otpControllers[index],
+                    focusNode: _focusNodes[index],
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    maxLength: 1,
+                    style: TextStyle(fontSize: 20.sp),
+                    decoration: const InputDecoration(
+                      counterText: "",
+                      border: InputBorder.none,
                     ),
-                    child: TextField(
-                      controller: _otpControllers[index],
-                      focusNode: _focusNodes[index],
-                      textAlign: TextAlign.center,
-                      keyboardType: TextInputType.number,
-                      maxLength: 1,
-                      style: TextStyle(fontSize: 20.sp),
-                      decoration: const InputDecoration(
-                        counterText: "",
-                        border: InputBorder.none,
-                      ),
-                      onChanged: (value) {
-                        if (value.length == 1 && index < 4) {
-                          _focusNodes[index + 1].requestFocus();
-                        }
-                        if (value.isEmpty && index > 0) {
-                          _focusNodes[index - 1].requestFocus();
-                        }
-                        _checkOtpFilled();
-                      },
-                    ),
+                    onChanged: (value) {
+                      if (value.length == 1 && index < 4) {
+                        _focusNodes[index + 1].requestFocus();
+                      }
+                      if (value.isEmpty && index > 0) {
+                        _focusNodes[index - 1].requestFocus();
+                      }
+                      _checkOtpFilled();
+                    },
                   ),
                 ),
               ),
-              AppSpacing.h18,
-              RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: AppString.rec,
-                      style: FontManager.subtitle.copyWith(
-                        color: AppColors.back,
-                      ),
+            ),
+            AppSpacing.h18,
+            RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: AppString.rec,
+                    style: FontManager.subtitle.copyWith(color: AppColors.back),
+                  ),
+                  TextSpan(
+                    text: AppString.resend,
+                    style: FontManager.subtitle.copyWith(
+                      color: AppColors.optBlue,
                     ),
-                    TextSpan(
-                      text: AppString.resend,
-                      style: FontManager.subtitle.copyWith(
-                        color: AppColors.optBlue,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              AppSpacing.h14,
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: CustomButton(
-                  onTap: _isOtpFilled
-                      ? () {
-                          if (widget.source == OtpSource.signup) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const VerifySccessful(),
-                              ),
-                            );
-                          } else {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const ChangePassword(),
-                              ),
-                            );
-                          }
+            ),
+            AppSpacing.h14,
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: CustomButton(
+                onTap: _isOtpFilled
+                    ? () {
+                        if (widget.source == OtpSource.signup) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const VerifySccessful(),
+                            ),
+                          );
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ChangePassword(),
+                            ),
+                          );
                         }
-                      : null,
-                  bgColor: _isOtpFilled
-                      ? AppColors.primaryColor
-                      : AppColors.grey,
-                  boxShadowColor: Colors.transparent,
-                  text: "Verify",
-                ),
+                      }
+                    : null,
+                bgColor: _isOtpFilled ? AppColors.primaryColor : AppColors.grey,
+                boxShadowColor: Colors.transparent,
+                text: "Verify",
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

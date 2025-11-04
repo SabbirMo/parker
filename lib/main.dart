@@ -5,7 +5,13 @@ import 'package:parker_touch/core/constants/app_colors.dart';
 import 'package:parker_touch/view/splash/splash_view.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((_) {
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -17,9 +23,14 @@ class MyApp extends StatelessWidget {
       designSize: const Size(360, 690),
       minTextAdapt: true,
       splitScreenMode: true,
+      useInheritedMediaQuery: true,
+      ensureScreenSize: true,
       builder: (context, child) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(scaffoldBackgroundColor: AppColors.white),
+        theme: ThemeData(
+          scaffoldBackgroundColor: AppColors.white,
+          useMaterial3: true,
+        ),
         home: const FullScreenWrapper(child: SplashView()),
       ),
     );
