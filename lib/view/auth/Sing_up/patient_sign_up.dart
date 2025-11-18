@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:parker_touch/core/constants/app_colors.dart';
 import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/app_string.dart';
@@ -10,21 +10,22 @@ import 'package:parker_touch/core/widget/back_button.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/core/widget/custom_textfield.dart';
 import 'package:parker_touch/core/widget/snack_bar.dart';
-import 'package:parker_touch/provider/auth/signup_provider/monitor_provider.dart';
+import 'package:parker_touch/provider/auth/signup_provider/patient_provider.dart';
 import 'package:parker_touch/view/auth/login/login_view.dart';
 import 'package:parker_touch/view/auth/otp/otp_verification.dart';
 import 'package:provider/provider.dart';
 
-class MonitorSignUp extends StatefulWidget {
-  const MonitorSignUp({super.key});
+class PatientSignUp extends StatefulWidget {
+  const PatientSignUp({super.key});
 
   @override
-  State<MonitorSignUp> createState() => _MonitorSignUpState();
+  State<PatientSignUp> createState() => _PatientSignUpState();
 }
 
-class _MonitorSignUpState extends State<MonitorSignUp> {
+class _PatientSignUpState extends State<PatientSignUp> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController ageController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
@@ -33,6 +34,7 @@ class _MonitorSignUpState extends State<MonitorSignUp> {
   void dispose() {
     nameController.dispose();
     emailController.dispose();
+    ageController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
     super.dispose();
@@ -40,10 +42,12 @@ class _MonitorSignUpState extends State<MonitorSignUp> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<MonitorProvider>(context);
+    final provider = Provider.of<PatientProvider>(context);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
+        clipBehavior: Clip.none,
         children: [
           Align(
             alignment: Alignment.topRight,
@@ -54,12 +58,16 @@ class _MonitorSignUpState extends State<MonitorSignUp> {
             ),
           ),
 
-          const Positioned(top: 50, left: 20, child: CustomBackButton()),
+          Positioned(top: 50, left: 20, child: CustomBackButton()),
+          Positioned(
+            bottom: 0,
+            child: SvgPicture.asset(SvgAssets.bottom, fit: BoxFit.contain),
+          ),
 
           Positioned(
             top: 98.h,
-            left: 0,
             bottom: 0,
+            left: 0,
             child: SingleChildScrollView(
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -70,7 +78,7 @@ class _MonitorSignUpState extends State<MonitorSignUp> {
                 decoration: BoxDecoration(
                   color: AppColors.loginCont.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xffd6d9dd)),
+                  border: Border.all(color: Color(0xffd6d9dd)),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withValues(alpha: 0.3),
@@ -88,7 +96,7 @@ class _MonitorSignUpState extends State<MonitorSignUp> {
                       style: FontManager.titleStyle,
                     ),
                     Text(
-                      AppString.monitorSingUp,
+                      AppString.singUp,
                       style: FontManager.subtitle.copyWith(
                         color: AppColors.grey,
                       ),
@@ -107,15 +115,19 @@ class _MonitorSignUpState extends State<MonitorSignUp> {
                           hintText: AppString.hintEmailAddress,
                         ),
                         CustomTextfield(
+                          controller: ageController,
+                          text: AppString.age,
+                          hintText: 'Enter your age',
+                          keyboardType: TextInputType.number,
+                        ),
+                        CustomTextfield(
                           controller: passwordController,
                           text: AppString.password,
                           hintText: AppString.hintPassword,
                           icon: provider.password
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          onIconPressed: () {
-                            provider.togglePassword();
-                          },
+                          onIconPressed: provider.togglePassword,
                           obscureText: provider.password,
                         ),
                         CustomTextfield(
@@ -125,14 +137,12 @@ class _MonitorSignUpState extends State<MonitorSignUp> {
                           icon: provider.confirmPassword
                               ? Icons.visibility_outlined
                               : Icons.visibility_off_outlined,
-                          onIconPressed: () {
-                            provider.toggleConfirmPassword();
-                          },
+                          onIconPressed: provider.toggleConfirmPassword,
                           obscureText: provider.confirmPassword,
                         ),
                         AppSpacing.h10,
                         provider.isloading
-                            ? const CircularProgressIndicator(
+                            ? CircularProgressIndicator(
                                 color: AppColors.primaryColor,
                               )
                             : CustomButton(
@@ -144,38 +154,47 @@ class _MonitorSignUpState extends State<MonitorSignUp> {
                                       .trim();
                                   final confirmPassword =
                                       confirmPasswordController.text.trim();
+                                  final age = int.tryParse(
+                                    ageController.text.trim(),
+                                  );
 
+                                  // Validate fields
                                   if (name.isEmpty ||
                                       email.isEmpty ||
+                                      age == 0 ||
                                       password.isEmpty ||
                                       confirmPassword.isEmpty) {
                                     CustomSnackBar.showError(
                                       context,
-                                      'Please fill in all fields.',
+                                      'Please fill in all fields correctly',
                                     );
                                     return;
                                   }
 
+                                  // Validate password match
                                   if (password != confirmPassword) {
                                     CustomSnackBar.showError(
                                       context,
-                                      'Passwords do not match.',
+                                      'Passwords do not match',
                                     );
                                     return;
                                   }
 
-                                  final token = await provider.signupMonitor(
+                                  final otpToken = await provider.signupPatient(
                                     name,
                                     email,
+                                    age ?? 0,
                                     password,
                                     confirmPassword,
                                   );
-                                  if (token != null) {
+
+                                  if (otpToken != null) {
+                                    // Navigate to OTP verification screen
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (_) => OtpVerification(
-                                          otpToken: token,
+                                          otpToken: otpToken,
                                           source: OtpSource.signup,
                                           email: email,
                                         ),
@@ -202,7 +221,6 @@ class _MonitorSignUpState extends State<MonitorSignUp> {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    AppSpacing.h2,
                     Align(
                       child: InkWell(
                         onTap: () {
@@ -224,14 +242,6 @@ class _MonitorSignUpState extends State<MonitorSignUp> {
                   ],
                 ),
               ),
-            ),
-          ),
-
-          Positioned(
-            bottom: 0,
-            left: 0,
-            child: IgnorePointer(
-              child: SvgPicture.asset(SvgAssets.bottom, fit: BoxFit.contain),
             ),
           ),
         ],

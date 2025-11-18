@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:parker_touch/core/constants/app_colors.dart';
+import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
+import 'package:parker_touch/provider/auth/signup_provider/monitor_provider.dart';
+import 'package:parker_touch/provider/auth/signup_provider/patient_provider.dart';
 import 'package:parker_touch/view/splash/splash_view.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,7 +14,16 @@ void main() {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]).then((_) {
-    runApp(const MyApp());
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => PatientProvider()),
+          ChangeNotifierProvider(create: (_) => MonitorProvider()),
+          ChangeNotifierProvider(create: (_) => LoginProvider()),
+        ],
+        child: const MyApp(),
+      ),
+    );
   });
 }
 

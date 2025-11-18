@@ -8,13 +8,13 @@ import 'package:parker_touch/core/widget/back_button.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/core/widget/custom_textfield.dart';
 import 'package:parker_touch/view/auth/login/login_view.dart';
-import 'package:parker_touch/view/auth/otp/otp_verification.dart';
 
 class ForgotPassword extends StatelessWidget {
   const ForgotPassword({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController emailController = TextEditingController();
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -62,18 +62,17 @@ class ForgotPassword extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   AppSpacing.h24,
-                  CustomTextfield(text: "Email", hintText: 'someone@gmail.com'),
+                  CustomTextfield(
+                    controller: emailController,
+                    text: "Email",
+                    hintText: 'someone@gmail.com',
+                  ),
                   AppSpacing.h24,
                   CustomButton(
                     text: "Send",
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              const OtpVerification(source: OtpSource.send),
-                        ),
-                      );
+                      final email = emailController.text.trim();
+                      print('Reset link sent to $email');
                     },
                   ),
                   AppSpacing.h24,

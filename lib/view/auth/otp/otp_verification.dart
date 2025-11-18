@@ -7,15 +7,24 @@ import 'package:parker_touch/core/constants/assets_manager.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/back_button.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
+import 'package:parker_touch/core/widget/snack_bar.dart';
+import 'package:parker_touch/provider/auth/signup_provider/patient_provider.dart';
 import 'package:parker_touch/view/auth/otp/verify_sccessful.dart';
-import 'package:parker_touch/view/auth/change_password/change_password.dart';
+import 'package:provider/provider.dart';
 
 enum OtpSource { signup, send }
 
 class OtpVerification extends StatefulWidget {
   final OtpSource source;
+  final String? email;
+  final String? otpToken;
 
-  const OtpVerification({super.key, required this.source});
+  const OtpVerification({
+    super.key,
+    required this.source,
+    this.email,
+    this.otpToken,
+  });
 
   @override
   State<OtpVerification> createState() => _OtpVerificationState();
@@ -28,6 +37,28 @@ class _OtpVerificationState extends State<OtpVerification> {
   );
   final List<FocusNode> _focusNodes = List.generate(5, (index) => FocusNode());
   bool _isOtpFilled = false;
+
+  String _maskEmail(String email) {
+    if (email.isEmpty) return email;
+
+    final parts = email.split('@');
+    if (parts.length != 2) return email;
+
+    final localPart = parts[0];
+    final domain = parts[1];
+
+    if (localPart.length <= 3) return email;
+
+    // Calculate middle position
+    final middleStart = (localPart.length / 2 - 1.5).round();
+    final middleEnd = middleStart + 3;
+
+    // Split into three parts: before mask, mask, after mask
+    final beforeMask = localPart.substring(0, middleStart);
+    final afterMask = localPart.substring(middleEnd);
+
+    return '$beforeMask***$afterMask@$domain';
+  }
 
   void _checkOtpFilled() {
     setState(() {
@@ -50,6 +81,8 @@ class _OtpVerificationState extends State<OtpVerification> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<PatientProvider>(context);
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -62,7 +95,7 @@ class _OtpVerificationState extends State<OtpVerification> {
             Image.asset(
               ImageAssets.otp,
               width: 291.w,
-              height: 291,
+              height: 291.h,
               fit: BoxFit.cover,
             ),
             Text(
@@ -79,7 +112,9 @@ class _OtpVerificationState extends State<OtpVerification> {
               ),
             ),
             Text(
-              AppString.otpMail,
+              widget.email != null
+                  ? _maskEmail(widget.email!)
+                  : AppString.otpMail,
               style: FontManager.subtitle.copyWith(fontSize: 14.sp),
             ),
             AppSpacing.h20,
@@ -120,49 +155,81 @@ class _OtpVerificationState extends State<OtpVerification> {
               ),
             ),
             AppSpacing.h18,
-            RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: AppString.rec,
-                    style: FontManager.subtitle.copyWith(color: AppColors.back),
-                  ),
-                  TextSpan(
-                    text: AppString.resend,
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  AppString.rec,
+                  style: FontManager.subtitle.copyWith(color: AppColors.back),
+                ),
+                InkWell(
+                  onTap: () async {
+                    // Resend OTP logic here
+                    if (widget.source == OtpSource.signup &&
+                        widget.otpToken != null) {
+                      final result = await provider.resendOtp(widget.otpToken!);
+                      if (result != null) {
+                        CustomSnackBar.showSuccess(
+                          context,
+                          'OTP resent successfully to your email.',
+                        );
+                      } else {
+                        CustomSnackBar.showError(
+                          context,
+                          'Failed to resend OTP. Please try again.',
+                        );
+                      }
+                    }
+                  },
+                  child: Text(
+                    AppString.resend,
                     style: FontManager.subtitle.copyWith(
                       color: AppColors.optBlue,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             AppSpacing.h14,
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: CustomButton(
-                onTap: _isOtpFilled
-                    ? () {
-                        if (widget.source == OtpSource.signup) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const VerifySccessful(),
-                            ),
-                          );
-                        } else {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const ChangePassword(),
-                            ),
-                          );
-                        }
-                      }
-                    : null,
-                bgColor: _isOtpFilled ? AppColors.primaryColor : AppColors.grey,
-                boxShadowColor: Colors.transparent,
-                text: "Verify",
-              ),
+              child: provider.isloading
+                  ? CircularProgressIndicator(color: AppColors.primaryColor)
+                  : CustomButton(
+                      onTap: _isOtpFilled
+                          ? () async {
+                              final otp = _otpControllers
+                                  .map((controller) => controller.text)
+                                  .join();
+                              if (widget.source == OtpSource.signup &&
+                                  widget.otpToken != null) {
+                                final result = await provider.verifyOtp(
+                                  otp,
+                                  widget.otpToken!,
+                                );
+                                if (result != null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => VerifySccessful(),
+                                    ),
+                                  );
+                                } else {
+                                  CustomSnackBar.showError(
+                                    context,
+                                    'OTP verification failed. Please try again.',
+                                  );
+                                }
+                              }
+                            }
+                          : null,
+                      bgColor: _isOtpFilled
+                          ? AppColors.primaryColor
+                          : AppColors.grey,
+                      boxShadowColor: Colors.transparent,
+                      text: "Verify",
+                    ),
             ),
           ],
         ),

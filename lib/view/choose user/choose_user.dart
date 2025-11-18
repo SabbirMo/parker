@@ -7,7 +7,7 @@ import 'package:parker_touch/core/constants/app_string.dart';
 import 'package:parker_touch/core/constants/assets_manager.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/view/auth/Sing_up/monitor_sign_up.dart';
-import 'package:parker_touch/view/auth/Sing_up/sing_up_view.dart';
+import 'package:parker_touch/view/auth/Sing_up/patient_sign_up.dart';
 import 'package:parker_touch/view/auth/login/login_view.dart';
 
 class ChooseUser extends StatelessWidget {
@@ -38,7 +38,9 @@ class ChooseUser extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SignupView()),
+                  MaterialPageRoute(
+                    builder: (context) => const PatientSignUp(),
+                  ),
                 );
               },
               title: AppString.title,

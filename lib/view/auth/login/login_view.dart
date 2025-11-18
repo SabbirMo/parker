@@ -9,10 +9,11 @@ import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/back_button.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/core/widget/custom_textfield.dart';
+import 'package:parker_touch/core/widget/snack_bar.dart';
+import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
 import 'package:parker_touch/view/auth/forgot/forgot_password.dart';
 import 'package:parker_touch/view/choose%20user/choose_user.dart';
-import 'package:parker_touch/view/patient/patient_view.dart';
-import 'package:parker_touch/view/monitor/monitor_view.dart';
+import 'package:provider/provider.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -32,26 +33,9 @@ class _LoginViewState extends State<LoginView> {
     super.dispose();
   }
 
-  void _handleLogin() {
-    // Check if either email or password fields have text
-    if (_emailController.text.isNotEmpty ||
-        _passwordController.text.isNotEmpty) {
-      // Navigate to MonitorView if fields have content
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const MonitorView()),
-      );
-    } else {
-      // Navigate to PatientView if fields are empty
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const PatientView()),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<LoginProvider>(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Column(
@@ -111,8 +95,13 @@ class _LoginViewState extends State<LoginView> {
                         CustomTextfield(
                           text: AppString.password,
                           hintText: AppString.hintPassword,
-                          icon: Icons.visibility_outlined,
-                          obscureText: true,
+                          icon: provider.password
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                          onIconPressed: () {
+                            provider.togglePassword();
+                          },
+                          obscureText: provider.password,
                           controller: _passwordController,
                         ),
                         GestureDetector(
@@ -135,7 +124,52 @@ class _LoginViewState extends State<LoginView> {
                           ),
                         ),
                         AppSpacing.h10,
-                        CustomButton(text: "Login", onTap: _handleLogin),
+                        provider.isloading
+                            ? Center(
+                                child: CircularProgressIndicator(
+                                  color: AppColors.primaryColor,
+                                ),
+                              )
+                            : CustomButton(
+                                text: "Login",
+                                onTap: () async {
+                                  final email = _emailController.text.trim();
+                                  final password = _passwordController.text
+                                      .trim();
+
+                                  if (email.isEmpty || password.isEmpty) {
+                                    CustomSnackBar.showError(
+                                      context,
+                                      'Please fill in all fields',
+                                    );
+                                    return;
+                                  }
+
+                                  final result = await provider.loginUser(
+                                    email,
+                                    password,
+                                  );
+                                  if (result != null) {
+                                    CustomSnackBar.showSuccess(
+                                      context,
+                                      'Login successful',
+                                    );
+
+                                    // Navigator.push(
+                                    //   context,
+                                    //   MaterialPageRoute(
+                                    //     builder: (_) => PatientView(),
+                                    //   ),
+                                    // );
+                                    // Navigate to the next screen or perform other actions
+                                  } else {
+                                    CustomSnackBar.showError(
+                                      context,
+                                      'Login failed. Please check your credentials.',
+                                    );
+                                  }
+                                },
+                              ),
                         AppSpacing.h10,
                         Align(
                           child: Text(
