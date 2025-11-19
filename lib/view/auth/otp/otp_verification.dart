@@ -8,7 +8,9 @@ import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/back_button.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/core/widget/snack_bar.dart';
+import 'package:parker_touch/provider/auth/forgot_provider/forgot_password_provider.dart';
 import 'package:parker_touch/provider/auth/signup_provider/patient_provider.dart';
+import 'package:parker_touch/view/auth/change_password/change_password.dart';
 import 'package:parker_touch/view/auth/otp/verify_sccessful.dart';
 import 'package:provider/provider.dart';
 
@@ -37,6 +39,7 @@ class _OtpVerificationState extends State<OtpVerification> {
   );
   final List<FocusNode> _focusNodes = List.generate(5, (index) => FocusNode());
   bool _isOtpFilled = false;
+  String? _currentOtpToken;
 
   String _maskEmail(String email) {
     if (email.isEmpty) return email;
@@ -58,6 +61,12 @@ class _OtpVerificationState extends State<OtpVerification> {
     final afterMask = localPart.substring(middleEnd);
 
     return '$beforeMask***$afterMask@$domain';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _currentOtpToken = widget.otpToken;
   }
 
   void _checkOtpFilled() {
@@ -82,6 +91,9 @@ class _OtpVerificationState extends State<OtpVerification> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<PatientProvider>(context);
+    final forgotPassVerifyProvider = Provider.of<ForgotPasswordProvider>(
+      context,
+    );
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -180,6 +192,31 @@ class _OtpVerificationState extends State<OtpVerification> {
                           'Failed to resend OTP. Please try again.',
                         );
                       }
+                    } else if (widget.source == OtpSource.send &&
+                        widget.otpToken != null &&
+                        widget.email != null) {
+                      debugPrint('Resending OTP for email: ${widget.email}');
+                      final result = await forgotPassVerifyProvider
+                          .forgotPassResendOtp(widget.otpToken!, widget.email!);
+                      if (result != null) {
+                        // Update token if a new one is returned
+                        if (result.length > 20) {
+                          // Likely a token, not a message
+                          setState(() {
+                            _currentOtpToken = result;
+                          });
+                          debugPrint('Updated OTP token: $result');
+                        }
+                        CustomSnackBar.showSuccess(
+                          context,
+                          'OTP resent successfully to your email.',
+                        );
+                      } else {
+                        CustomSnackBar.showError(
+                          context,
+                          'Failed to resend OTP. Please try again.',
+                        );
+                      }
                     }
                   },
                   child: Text(
@@ -194,7 +231,10 @@ class _OtpVerificationState extends State<OtpVerification> {
             AppSpacing.h14,
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: provider.isloading
+              child:
+                  (widget.source == OtpSource.signup
+                      ? provider.isloading
+                      : forgotPassVerifyProvider.isLoading)
                   ? CircularProgressIndicator(color: AppColors.primaryColor)
                   : CustomButton(
                       onTap: _isOtpFilled
@@ -202,24 +242,65 @@ class _OtpVerificationState extends State<OtpVerification> {
                               final otp = _otpControllers
                                   .map((controller) => controller.text)
                                   .join();
-                              if (widget.source == OtpSource.signup &&
-                                  widget.otpToken != null) {
-                                final result = await provider.verifyOtp(
-                                  otp,
-                                  widget.otpToken!,
+
+                              if (widget.source == OtpSource.signup) {
+                                // Signup flow - use PatientProvider
+                                if (widget.otpToken != null) {
+                                  final result = await provider.verifyOtp(
+                                    otp,
+                                    widget.otpToken!,
+                                  );
+                                  if (result != null) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => VerifySccessful(),
+                                      ),
+                                    );
+                                  } else {
+                                    CustomSnackBar.showError(
+                                      context,
+                                      'OTP verification failed. Please try again.',
+                                    );
+                                  }
+                                }
+                              } else if (widget.source == OtpSource.send) {
+                                // Forgot password flow - use ForgotPasswordProvider
+                                debugPrint(
+                                  'Starting forgot password OTP verification',
                                 );
-                                if (result != null) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => VerifySccessful(),
-                                    ),
-                                  );
+                                debugPrint('OTP Token: $_currentOtpToken');
+                                debugPrint('OTP Code: $otp');
+
+                                if (_currentOtpToken != null) {
+                                  final result = await forgotPassVerifyProvider
+                                      .verifyResetOtp(_currentOtpToken!, otp);
+
+                                  debugPrint('Verification result: $result');
+
+                                  if (result != null) {
+                                    debugPrint(
+                                      'OTP verified! Navigating to ChangePassword',
+                                    );
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ChangePassword(
+                                          token: _currentOtpToken!,
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    debugPrint(
+                                      'OTP verification failed - result is null',
+                                    );
+                                    CustomSnackBar.showError(
+                                      context,
+                                      'OTP verification failed. Please try again.',
+                                    );
+                                  }
                                 } else {
-                                  CustomSnackBar.showError(
-                                    context,
-                                    'OTP verification failed. Please try again.',
-                                  );
+                                  debugPrint('ERROR: OTP Token is null!');
                                 }
                               }
                             }

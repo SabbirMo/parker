@@ -13,6 +13,8 @@ import 'package:parker_touch/core/widget/snack_bar.dart';
 import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
 import 'package:parker_touch/view/auth/forgot/forgot_password.dart';
 import 'package:parker_touch/view/choose%20user/choose_user.dart';
+import 'package:parker_touch/view/monitor/monitor_view.dart';
+import 'package:parker_touch/view/patient/patient_view.dart';
 import 'package:provider/provider.dart';
 
 class LoginView extends StatefulWidget {
@@ -145,23 +147,31 @@ class _LoginViewState extends State<LoginView> {
                                     return;
                                   }
 
-                                  final result = await provider.loginUser(
+                                  bool result = await provider.loginUser(
                                     email,
                                     password,
                                   );
-                                  if (result != null) {
-                                    CustomSnackBar.showSuccess(
-                                      context,
-                                      'Login successful',
-                                    );
-
-                                    // Navigator.push(
-                                    //   context,
-                                    //   MaterialPageRoute(
-                                    //     builder: (_) => PatientView(),
-                                    //   ),
-                                    // );
-                                    // Navigate to the next screen or perform other actions
+                                  if (result) {
+                                    if (provider.role == 'patient') {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => PatientView(),
+                                        ),
+                                      );
+                                    } else if (provider.role == 'monitor') {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => MonitorView(),
+                                        ),
+                                      );
+                                    } else {
+                                      CustomSnackBar.showError(
+                                        context,
+                                        'Unknown user role',
+                                      );
+                                    }
                                   } else {
                                     CustomSnackBar.showError(
                                       context,

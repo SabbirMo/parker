@@ -13,41 +13,36 @@ class AddMedicine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomBackButton(),
-              AppSpacing.h12,
-              Text('Add Medicine', style: FontManager.connect),
-              AppSpacing.h12,
-              AddMedicineContainer(
-                text: "Upload Prescription",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => UploadPrescription(),
-                    ),
-                  );
-                },
-              ),
-              AppSpacing.h12,
-              AddMedicineContainer(
-                text: "Add Manually",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddManuallyScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+            CustomBackButton(),
+            AppSpacing.h12,
+            Text('Add Medicine', style: FontManager.connect),
+            AppSpacing.h12,
+            AddMedicineContainer(
+              text: "Upload Prescription",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UploadPrescription()),
+                );
+              },
+            ),
+            AppSpacing.h12,
+            AddMedicineContainer(
+              text: "Add Manually",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddManuallyScreen()),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

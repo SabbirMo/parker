@@ -37,7 +37,7 @@ class _ShowDialogWidgetState extends State<ShowDialogWidget> {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
       child: Container(
-        height: size.height * 0.65,
+        height: size.height * 0.5.h,
         padding: EdgeInsets.all(22.r),
         decoration: BoxDecoration(
           color: AppColors.white,

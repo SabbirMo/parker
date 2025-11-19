@@ -41,100 +41,99 @@ class _EditProfileState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomBackButton(),
-              AppSpacing.h12,
-              Text("Edit Profile", style: FontManager.connect),
-              AppSpacing.h8,
-              Align(
-                alignment: Alignment.center,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      width: 100.w,
-                      height: 100.h,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: _selectedImage != null
-                            ? DecorationImage(
-                                image: FileImage(_selectedImage!),
-                                fit: BoxFit.cover,
-                              )
-                            : DecorationImage(
-                                image: AssetImage('assets/images/image.png'),
-                                fit: BoxFit.cover,
-                              ),
-                        border: Border.all(color: AppColors.login, width: 4.w),
-                      ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+            CustomBackButton(),
+            AppSpacing.h12,
+            Text("Edit Profile", style: FontManager.connect),
+            AppSpacing.h8,
+            Align(
+              alignment: Alignment.center,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    width: 100.w,
+                    height: 100.h,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: _selectedImage != null
+                          ? DecorationImage(
+                              image: FileImage(_selectedImage!),
+                              fit: BoxFit.cover,
+                            )
+                          : DecorationImage(
+                              image: AssetImage('assets/images/image.png'),
+                              fit: BoxFit.cover,
+                            ),
+                      border: Border.all(color: AppColors.login, width: 4.w),
                     ),
-                    Positioned(
-                      right: -2,
-                      bottom: 16.h,
-                      child: GestureDetector(
-                        onTap: _pickImage,
-                        child: Container(
-                          padding: EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColors.login,
-                          ),
-                          child: Image.asset('assets/icons/pan.png'),
+                  ),
+                  Positioned(
+                    right: -2,
+                    bottom: 16.h,
+                    child: GestureDetector(
+                      onTap: _pickImage,
+                      child: Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.login,
                         ),
+                        child: Image.asset('assets/icons/pan.png'),
                       ),
                     ),
+                  ),
+                ],
+              ),
+            ),
+            AppSpacing.h12,
+            // Scrollable content section
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    CustomTextfield(
+                      text: 'Full Name',
+                      hintText: 'Enola Parker',
+                      borderColor: AppColors.textFieldBorderColor,
+                      bgColor: AppColors.textFieldBgColor,
+                    ),
+                    AppSpacing.h4,
+                    CustomTextfield(
+                      text: 'Email',
+                      hintText: 'example@email.com',
+                      borderColor: AppColors.textFieldBorderColor,
+                      bgColor: AppColors.textFieldBgColor,
+                    ),
+                    AppSpacing.h4,
+                    CustomTextfield(
+                      text: 'Age',
+                      hintText: '27 years old',
+                      borderColor: AppColors.textFieldBorderColor,
+                      bgColor: AppColors.textFieldBgColor,
+                    ),
+                    AppSpacing.h4,
+                    CustomTextfield(
+                      text: 'Account Type',
+                      hintText: 'Monitor',
+                      borderColor: AppColors.textFieldBorderColor,
+                      bgColor: Color(0xff5E5D5D).withValues(alpha: 0.1),
+                      enabled: false,
+                    ),
+                    AppSpacing.h38,
+
+                    CustomButton(text: 'Save', onTap: () {}),
+                    AppSpacing.h16, // Add some spacing at the bottom
                   ],
                 ),
               ),
-              AppSpacing.h12,
-              // Scrollable content section
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      CustomTextfield(
-                        text: 'Full Name',
-                        hintText: 'Enola Parker',
-                        borderColor: AppColors.textFieldBorderColor,
-                        bgColor: AppColors.textFieldBgColor,
-                      ),
-                      AppSpacing.h4,
-                      CustomTextfield(
-                        text: 'Email',
-                        hintText: 'example@email.com',
-                        borderColor: AppColors.textFieldBorderColor,
-                        bgColor: AppColors.textFieldBgColor,
-                      ),
-                      AppSpacing.h4,
-                      CustomTextfield(
-                        text: 'Age',
-                        hintText: '27 years old',
-                        borderColor: AppColors.textFieldBorderColor,
-                        bgColor: AppColors.textFieldBgColor,
-                      ),
-                      AppSpacing.h4,
-                      CustomTextfield(
-                        text: 'Account Type',
-                        hintText: 'Monitor',
-                        borderColor: AppColors.textFieldBorderColor,
-                        bgColor: Color(0xff5E5D5D).withValues(alpha: 0.1),
-                        enabled: false,
-                      ),
-                      AppSpacing.h38,
-
-                      CustomButton(text: 'Save', onTap: () {}),
-                      AppSpacing.h16, // Add some spacing at the bottom
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

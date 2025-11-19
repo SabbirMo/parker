@@ -5,11 +5,13 @@ import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/core/widget/free_trial_container.dart';
+import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
 import 'package:parker_touch/view/choose%20user/choose_user.dart';
 import 'package:parker_touch/view/monitor/edit_profile/edit_profile.dart';
 import 'package:parker_touch/view/monitor/privacy_setting/privacy_setting.dart';
 import 'package:parker_touch/view/patient/settings/privacy_policy.dart';
 import 'package:parker_touch/view/patient/settings/team_condition.dart';
+import 'package:provider/provider.dart';
 
 class PotientSetting extends StatefulWidget {
   const PotientSetting({super.key});
@@ -26,7 +28,7 @@ class _PotientSettingState extends State<PotientSetting> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -185,9 +187,69 @@ class _PotientSettingState extends State<PotientSetting> {
                 bgColor: Color(0xfffec3c9),
                 textColor: AppColors.cColor2,
                 onTap: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => ChooseUser()),
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text('Logout', textAlign: TextAlign.center),
+                        content: Text(
+                          'Are you sure you want to logout?',
+                          textAlign: TextAlign.center,
+                        ),
+                        actions: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              FilledButton(
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  side: BorderSide(
+                                    color: AppColors.primaryColor,
+                                    width: 1,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(color: AppColors.back),
+                                ),
+                              ),
+                              FilledButton(
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: AppColors.primaryColor,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                  side: BorderSide(
+                                    color: AppColors.primaryColor,
+                                    width: 1,
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  final provider = Provider.of<LoginProvider>(
+                                    context,
+                                    listen: false,
+                                  );
+                                  provider.logout();
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => ChooseUser(),
+                                    ),
+                                  );
+                                },
+                                child: Text('Logout'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
                   );
                 },
               ),

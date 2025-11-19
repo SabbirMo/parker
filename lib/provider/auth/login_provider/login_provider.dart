@@ -14,9 +14,12 @@ class LoginProvider extends ChangeNotifier {
 
   //login user
   bool isloading = false;
+  String? accessToken;
+  String? refreshToken;
+  String? role;
   final baseUrl = 'https://k47k7scv-8000.inc1.devtunnels.ms';
 
-  Future<Map<String, dynamic>?> loginUser(String email, String password) async {
+  Future<bool> loginUser(String email, String password) async {
     try {
       isloading = true;
       notifyListeners();
@@ -29,24 +32,32 @@ class LoginProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final String? accessToken = data['access'];
-        final String? refreshToken = data['refresh'];
+        accessToken = data['access'];
+        refreshToken = data['refresh'];
 
-        debugPrint('Access Token: $accessToken');
-        debugPrint('Refresh Token: $refreshToken');
+        role = data['user']['role'];
+
         isloading = false;
         notifyListeners();
-        return data;
+        return true;
       } else {
         isloading = false;
         notifyListeners();
-        return null;
+        return false;
       }
     } catch (e) {
       isloading = false;
       notifyListeners();
       debugPrint(e.toString());
-      return null;
+      return false;
     }
+  }
+
+  //logout user
+  void logout() {
+    accessToken = null;
+    refreshToken = null;
+    role = null;
+    notifyListeners();
   }
 }

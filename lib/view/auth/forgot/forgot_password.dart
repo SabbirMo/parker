@@ -7,17 +7,34 @@ import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/back_button.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/core/widget/custom_textfield.dart';
+import 'package:parker_touch/core/widget/snack_bar.dart';
+import 'package:parker_touch/provider/auth/forgot_provider/forgot_password_provider.dart';
 import 'package:parker_touch/view/auth/login/login_view.dart';
+import 'package:parker_touch/view/auth/otp/otp_verification.dart';
+import 'package:provider/provider.dart';
 
-class ForgotPassword extends StatelessWidget {
+class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});
 
   @override
+  State<ForgotPassword> createState() => _ForgotPasswordState();
+}
+
+class _ForgotPasswordState extends State<ForgotPassword> {
+  final TextEditingController emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
+    final forgotPasswordProvider = Provider.of<ForgotPasswordProvider>(context);
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: Column(
           children: [
             SizedBox(height: MediaQuery.of(context).size.height * 0.05),
@@ -53,7 +70,7 @@ class ForgotPassword extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 12),
+                  SizedBox(height: 12.h),
                   Text(
                     AppString.resMessage,
                     style: FontManager.subtitle.copyWith(
@@ -68,13 +85,43 @@ class ForgotPassword extends StatelessWidget {
                     hintText: 'someone@gmail.com',
                   ),
                   AppSpacing.h24,
-                  CustomButton(
-                    text: "Send",
-                    onTap: () {
-                      final email = emailController.text.trim();
-                      print('Reset link sent to $email');
-                    },
-                  ),
+                  forgotPasswordProvider.isLoading
+                      ? CircularProgressIndicator(color: AppColors.primaryColor)
+                      : CustomButton(
+                          text: "Send",
+                          onTap: () async {
+                            final email = emailController.text.trim();
+
+                            if (email.isEmpty) {
+                              CustomSnackBar.showError(
+                                context,
+                                "Please enter your email.",
+                              );
+                              return;
+                            }
+
+                            final otpToken = await forgotPasswordProvider
+                                .sendResetLink(email);
+
+                            if (otpToken != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => OtpVerification(
+                                    source: OtpSource.send,
+                                    email: email,
+                                    otpToken: otpToken,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              CustomSnackBar.showError(
+                                context,
+                                "Failed to send reset link. Please try again.",
+                              );
+                            }
+                          },
+                        ),
                   AppSpacing.h24,
                   TextButton(
                     onPressed: () {
