@@ -53,38 +53,57 @@ class _PotientSettingState extends State<PotientSetting> {
                     children: [
                       Row(
                         children: [
-                          Container(
-                            padding: EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.blue.withValues(alpha: 0.2),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Center(
-                              child: Image.asset('assets/icons/person.png'),
-                            ),
-                          ),
-                          AppSpacing.w20,
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Enola Parker",
-                                  style: FontManager.loginStyle.copyWith(
-                                    fontSize: 20.sp,
-                                    color: AppColors.black1,
+                          Consumer<LoginProvider>(
+                            builder: (context, uploadProfile, child) =>
+                                ClipOval(
+                                  child: Container(
+                                    width: 50.w,
+                                    height: 50.h,
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.withValues(alpha: 0.2),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: uploadProfile.profilePicture != null
+                                        ? Image.network(
+                                            uploadProfile.profilePicture!,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Padding(
+                                            padding: EdgeInsets.all(12),
+                                            child: Image.asset(
+                                              'assets/icons/person.png',
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
                                   ),
                                 ),
-                                Text(
-                                  'enola@gmail.com',
-                                  style: FontManager.contSubTitle,
-                                ),
-                              ],
+                          ),
+                          AppSpacing.w16,
+                          Expanded(
+                            child: Consumer<LoginProvider>(
+                              builder: (context, loginProvider, child) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      loginProvider.fullName ?? "User",
+                                      style: FontManager.loginStyle.copyWith(
+                                        fontSize: 20.sp,
+                                        color: AppColors.black1,
+                                      ),
+                                    ),
+                                    Text(
+                                      loginProvider.email ?? 'user@email.com',
+                                      style: FontManager.contSubTitle,
+                                    ),
+                                  ],
+                                );
+                              },
                             ),
                           ),
                         ],
                       ),
-                      AppSpacing.h14,
+                      AppSpacing.h10,
                       RowWidgetCart(title: "Edit Profile"),
                     ],
                   ),

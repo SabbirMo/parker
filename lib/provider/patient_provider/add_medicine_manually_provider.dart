@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 // Provider
 class AddMedicineManuallyProvider extends ChangeNotifier {
   bool isLoading = false;
-  final String baseUrl = 'https://k47k7scv-8000.inc1.devtunnels.ms';
+  final String baseUrl = 'https://1kklrhx5-8000.inc1.devtunnels.ms';
 
   Future<bool> addMedicineManually(
     String name,

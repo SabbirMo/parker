@@ -10,7 +10,7 @@ class MedicineListProvider extends ChangeNotifier {
   List<MedicineListModel> medicines = [];
   String? errorMessage;
 
-  final String baseUrl = 'https://k47k7scv-8000.inc1.devtunnels.ms';
+  final String baseUrl = 'https://1kklrhx5-8000.inc1.devtunnels.ms';
 
   Future<void> fetchMedicines(String accessToken) async {
     isLoading = true;

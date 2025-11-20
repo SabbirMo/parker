@@ -21,7 +21,7 @@ class PatientProvider extends ChangeNotifier {
 
   //signup patient
   bool isloading = false;
-  final baseUrl = 'https://k47k7scv-8000.inc1.devtunnels.ms';
+  final baseUrl = 'https://1kklrhx5-8000.inc1.devtunnels.ms';
 
   Future<String?> signupPatient(
     String name,
