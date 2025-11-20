@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:parker_touch/core/constants/app_colors.dart';
 import 'package:parker_touch/provider/auth/change_password/change_password_provider.dart';
+import 'package:parker_touch/provider/auth/change_password/new_password_provider.dart';
 import 'package:parker_touch/provider/auth/forgot_provider/forgot_password_provider.dart';
 import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
 import 'package:parker_touch/provider/auth/signup_provider/monitor_provider.dart';
@@ -31,6 +32,7 @@ void main() async {
           ChangeNotifierProvider(create: (_) => ChangePasswordProvider()),
           ChangeNotifierProvider(create: (_) => AddMedicineManuallyProvider()),
           ChangeNotifierProvider(create: (_) => MedicineListProvider()),
+          ChangeNotifierProvider(create: (_) => NewPasswordProvider()),
         ],
         child: const MyApp(),
       ),
