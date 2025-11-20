@@ -126,7 +126,7 @@ class _LoginViewState extends State<LoginView> {
                           ),
                         ),
                         AppSpacing.h10,
-                        provider.isloading
+                        provider.isLoading
                             ? Center(
                                 child: CircularProgressIndicator(
                                   color: AppColors.primaryColor,

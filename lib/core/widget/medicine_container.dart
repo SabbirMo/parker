@@ -6,11 +6,13 @@ import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/core/widget/show_dialog_widget.dart';
+import 'package:parker_touch/view/patient/home/model/patient_home_model.dart';
 
 class MedicineContainer extends StatefulWidget {
   final VoidCallback? onTakeMedicine;
+  final NextMedicine? nextMedicine;
 
-  const MedicineContainer({super.key, this.onTakeMedicine});
+  const MedicineContainer({super.key, this.onTakeMedicine, this.nextMedicine});
 
   @override
   State<MedicineContainer> createState() => _MedicineContainerState();
@@ -88,8 +90,14 @@ class _MedicineContainerState extends State<MedicineContainer> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text("Next medicine", style: FontManager.loginStyle),
-                  Text("Aspirin", style: FontManager.titleStyle),
-                  Text("50 mg", style: FontManager.loginStyle),
+                  Text(
+                    widget.nextMedicine?.name ?? "No medicine",
+                    style: FontManager.titleStyle,
+                  ),
+                  Text(
+                    widget.nextMedicine?.dosage ?? "0mg",
+                    style: FontManager.loginStyle,
+                  ),
                 ],
               ),
               CircleAvatar(
@@ -105,7 +113,7 @@ class _MedicineContainerState extends State<MedicineContainer> {
               Image.asset('assets/icons/clock.png', width: 18.w),
               AppSpacing.w10,
               Text(
-                "08:30 PM",
+                widget.nextMedicine?.time ?? "--:--",
                 style: FontManager.loginStyle.copyWith(color: AppColors.login),
               ),
             ],

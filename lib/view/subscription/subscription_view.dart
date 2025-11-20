@@ -20,122 +20,119 @@ class _SubscriptionViewState extends State<SubscriptionView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomBackButton(),
-              AppSpacing.h12,
-              Text('Get', style: FontManager.bodyText8),
-              Text(
-                'Premium',
-                style: FontManager.bodyText8.copyWith(
-                  color: AppColors.login,
-                  height: 1,
-                ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+            CustomBackButton(),
+            AppSpacing.h12,
+            Text('Get', style: FontManager.bodyText8),
+            Text(
+              'Premium',
+              style: FontManager.bodyText8.copyWith(
+                color: AppColors.login,
+                height: 1,
               ),
-              Text('Access', style: FontManager.bodyText8),
-              AppSpacing.h6,
-              Text(
-                'with premium you can',
-                style: FontManager.connectPotient.copyWith(
-                  color: AppColors.black1,
-                ),
+            ),
+            Text('Access', style: FontManager.bodyText8),
+            AppSpacing.h6,
+            Text(
+              'with premium you can',
+              style: FontManager.connectPotient.copyWith(
+                color: AppColors.black1,
               ),
-              AppSpacing.h8,
-              FeatureTile(
-                text: 'Get smart, friendly alerts that speak to you by name.',
-              ),
-              AppSpacing.h8,
-              FeatureTile(
-                text:
-                    'Use your camera to confirm the right medicine before taking it.',
-              ),
-              AppSpacing.h8,
-              FeatureTile(
-                text: ' Let your loved ones track your progress in real time.',
-              ),
-              AppSpacing.h18,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedCardIndex = 0;
-                      });
-                    },
-                    child: PriceCard(
-                      duration: '1',
-                      durationUnit: 'month',
-                      originalPrice: '\$199.00',
-                      discountedPrice: '\$129.00',
-                      isSelected: _selectedCardIndex == 0,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedCardIndex = 1;
-                      });
-                    },
-                    child: PriceCard(
-                      duration: '6',
-                      durationUnit: 'month',
-                      originalPrice: '\$299.00',
-                      discountedPrice: '\$229.00',
-                      isSelected: _selectedCardIndex == 1,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedCardIndex = 2;
-                      });
-                    },
-                    child: PriceCard(
-                      duration: '12',
-                      durationUnit: 'month',
-                      originalPrice: '\$399.00',
-                      discountedPrice: '\$329.00',
-                      isPopular: true,
-                      isSelected: _selectedCardIndex == 2,
-                    ),
-                  ),
-                ],
-              ),
-              AppSpacing.h22,
-              Align(
-                alignment: Alignment.center,
-                child: Text(
-                  'Start your first plan today',
-                  style: FontManager.contTitle.copyWith(fontSize: 16.sp),
-                ),
-              ),
-              Align(
-                child: Text(
-                  "Automatic Renewal | Cancel Anytime",
-                  style: FontManager.contSubTitle.copyWith(
-                    color: Color(0xff626060),
+            ),
+            AppSpacing.h8,
+            FeatureTile(
+              text: 'Get smart, friendly alerts that speak to you by name.',
+            ),
+            AppSpacing.h8,
+            FeatureTile(
+              text:
+                  'Use your camera to confirm the right medicine before taking it.',
+            ),
+            AppSpacing.h8,
+            FeatureTile(
+              text: ' Let your loved ones track your progress in real time.',
+            ),
+            AppSpacing.h18,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedCardIndex = 0;
+                    });
+                  },
+                  child: PriceCard(
+                    duration: '1',
+                    durationUnit: 'month',
+                    originalPrice: '\$199.00',
+                    discountedPrice: '\$129.00',
+                    isSelected: _selectedCardIndex == 0,
                   ),
                 ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedCardIndex = 1;
+                    });
+                  },
+                  child: PriceCard(
+                    duration: '6',
+                    durationUnit: 'month',
+                    originalPrice: '\$299.00',
+                    discountedPrice: '\$229.00',
+                    isSelected: _selectedCardIndex == 1,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedCardIndex = 2;
+                    });
+                  },
+                  child: PriceCard(
+                    duration: '12',
+                    durationUnit: 'month',
+                    originalPrice: '\$399.00',
+                    discountedPrice: '\$329.00',
+                    isPopular: true,
+                    isSelected: _selectedCardIndex == 2,
+                  ),
+                ),
+              ],
+            ),
+            AppSpacing.h22,
+            Align(
+              alignment: Alignment.center,
+              child: Text(
+                'Start your first plan today',
+                style: FontManager.contTitle.copyWith(fontSize: 16.sp),
               ),
-              AppSpacing.h22,
-              CustomButton(
-                text: "Buy Now",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CancelSubscription(),
-                    ),
-                  );
-                },
+            ),
+            Align(
+              child: Text(
+                "Automatic Renewal | Cancel Anytime",
+                style: FontManager.contSubTitle.copyWith(
+                  color: Color(0xff626060),
+                ),
               ),
-            ],
-          ),
+            ),
+            AppSpacing.h22,
+            CustomButton(
+              text: "Buy Now",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CancelSubscription()),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

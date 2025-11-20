@@ -7,11 +7,15 @@ import 'package:parker_touch/provider/auth/forgot_provider/forgot_password_provi
 import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
 import 'package:parker_touch/provider/auth/signup_provider/monitor_provider.dart';
 import 'package:parker_touch/provider/auth/signup_provider/patient_provider.dart';
+import 'package:parker_touch/provider/patient_provider/add_medicine_manually_provider.dart';
+import 'package:parker_touch/provider/patient_provider/medicine_list_provider.dart';
 import 'package:parker_touch/view/splash/splash_view.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final loginProvider = LoginProvider();
+  await loginProvider.initialize();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -25,6 +29,8 @@ void main() async {
           ChangeNotifierProvider(create: (_) => LoginProvider()),
           ChangeNotifierProvider(create: (_) => ForgotPasswordProvider()),
           ChangeNotifierProvider(create: (_) => ChangePasswordProvider()),
+          ChangeNotifierProvider(create: (_) => AddMedicineManuallyProvider()),
+          ChangeNotifierProvider(create: (_) => MedicineListProvider()),
         ],
         child: const MyApp(),
       ),

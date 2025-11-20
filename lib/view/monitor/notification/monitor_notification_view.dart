@@ -111,9 +111,8 @@ class NotificationCart extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: color,
-              boxShadow: [
-             
-            ]),
+              boxShadow: [],
+            ),
 
             child: Center(
               child: Image.asset(

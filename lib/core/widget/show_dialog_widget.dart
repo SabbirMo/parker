@@ -33,11 +33,9 @@ class _ShowDialogWidgetState extends State<ShowDialogWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
       child: Container(
-        height: size.height * 0.5.h,
         padding: EdgeInsets.all(22.r),
         decoration: BoxDecoration(
           color: AppColors.white,
@@ -45,6 +43,7 @@ class _ShowDialogWidgetState extends State<ShowDialogWidget> {
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             CircleAvatar(
               radius: 22.r,
@@ -138,7 +137,7 @@ class _ShowDialogWidgetState extends State<ShowDialogWidget> {
               leftIcon: 'assets/icons/camera.png',
               isBoxShadow: false,
             ),
-            AppSpacing.h20,
+            AppSpacing.h18,
             Align(
               alignment: Alignment.centerLeft,
               child: Text(

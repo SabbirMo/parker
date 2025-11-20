@@ -105,6 +105,7 @@ class MedicineCart extends StatelessWidget {
     required this.days,
     this.color,
     this.index,
+    this.times,
   });
 
   final String num;
@@ -114,24 +115,37 @@ class MedicineCart extends StatelessWidget {
   final String days;
   final Color? color;
   final int? index;
+  final List<String>? times;
 
   @override
   Widget build(BuildContext context) {
-    // Determine how many items to show based on index
-    int itemCount = index != null && index! > 0 ? index! : 1;
-    // Limit to max 3 items
-    itemCount = itemCount > 3 ? 3 : itemCount;
-
-    // Create the list of widgets dynamically
     List<Widget> timeWidgets = [];
-    for (int i = 0; i < itemCount; i++) {
-      timeWidgets.add(Image.asset('assets/icons/ring.png'));
-      timeWidgets.add(AppSpacing.w4);
-      timeWidgets.add(Text('10:00 AM', style: FontManager.bodyText5));
 
-      // Add spacing between items (except after the last one)
-      if (i < itemCount - 1) {
-        timeWidgets.add(AppSpacing.w10);
+    if (times != null && times!.isNotEmpty) {
+      for (int i = 0; i < times!.length; i++) {
+        timeWidgets.add(Image.asset('assets/icons/ring.png'));
+        timeWidgets.add(AppSpacing.w4);
+        timeWidgets.add(Text(times![i], style: FontManager.bodyText5));
+
+        if (i < times!.length - 1) {
+          timeWidgets.add(AppSpacing.w10);
+        }
+      }
+    } else {
+      // Fallback to index-based displa
+      int itemCount = index != null && index! > 0 ? index! : 1;
+      // Limit to max 3 items
+      itemCount = itemCount > 3 ? 3 : itemCount;
+
+      for (int i = 0; i < itemCount; i++) {
+        timeWidgets.add(Image.asset('assets/icons/ring.png'));
+        timeWidgets.add(AppSpacing.w4);
+        timeWidgets.add(Text('10:00 AM', style: FontManager.bodyText5));
+
+        // Add spacing between items (except after the last one)
+        if (i < itemCount - 1) {
+          timeWidgets.add(AppSpacing.w10);
+        }
       }
     }
 
@@ -153,11 +167,15 @@ class MedicineCart extends StatelessWidget {
                   color: AppColors.black1,
                 ),
               ),
-              Text(
-                medicineName,
-                style: FontManager.contTitle.copyWith(
-                  fontSize: 14.sp,
-                  color: AppColors.black1,
+              Flexible(
+                child: Text(
+                  medicineName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: FontManager.contTitle.copyWith(
+                    fontSize: 14.sp,
+                    color: AppColors.black1,
+                  ),
                 ),
               ),
               AppSpacing.w4,
@@ -169,7 +187,12 @@ class MedicineCart extends StatelessWidget {
               AppSpacing.w6,
               Image.asset('assets/icons/clender.png'),
               AppSpacing.w4,
-              Text(days, style: FontManager.bodyText5),
+              Text(
+                '$days days',
+                style: FontManager.bodyText5,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ],
           ),
           AppSpacing.h12,

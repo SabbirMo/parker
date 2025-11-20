@@ -11,6 +11,9 @@ import 'package:parker_touch/core/widget/header_section.dart';
 import 'package:parker_touch/core/widget/medicine_container.dart';
 import 'package:parker_touch/core/widget/progress_bar_widget.dart';
 import 'package:parker_touch/view/patient/add_medicine/add_manually_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
+import 'package:parker_touch/provider/patient_provider/medicine_list_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,6 +26,29 @@ class _HomePageState extends State<HomePage> {
   int _progressCount = 0;
   final int _maxProgress = 4;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+      final medicineProvider = Provider.of<MedicineListProvider>(
+        context,
+        listen: false,
+      );
+
+      if (loginProvider.accessToken != null) {
+        debugPrint('Calling getNextMedicine API from HomePage');
+        medicineProvider.getNextMedicine(loginProvider.accessToken!).then((_) {
+          debugPrint(
+            'Next Medicine Data: ${medicineProvider.nextMedicine?.name}',
+          );
+        });
+      } else {
+        debugPrint('No access token available in HomePage');
+      }
+    });
+  }
+
   void _incrementProgress() {
     setState(() {
       if (_progressCount < _maxProgress) {
@@ -33,6 +59,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final medicineProvider = Provider.of<MedicineListProvider>(context);
     return Column(
       children: [
         // Fixed header section
@@ -57,7 +84,27 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       const FreeTrialContainer(),
                       AppSpacing.h16,
-                      MedicineContainer(onTakeMedicine: _incrementProgress),
+                      medicineProvider.isLoading
+                          ? Container(
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: AppColors.white,
+                                borderRadius: BorderRadius.circular(16.r),
+                                border: Border.all(
+                                  width: 1,
+                                  color: AppColors.primaryColor,
+                                ),
+                              ),
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  color: AppColors.primaryColor,
+                                ),
+                              ),
+                            )
+                          : MedicineContainer(
+                              nextMedicine: medicineProvider.nextMedicine,
+                              onTakeMedicine: _incrementProgress,
+                            ),
 
                       AppSpacing.h16,
                       Container(
