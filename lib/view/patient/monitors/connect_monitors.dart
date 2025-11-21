@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:parker_touch/core/constants/app_colors.dart';
 import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/app_string.dart';
@@ -7,14 +6,29 @@ import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/back_button.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/core/widget/custom_textfield.dart';
-import 'package:parker_touch/view/patient/monitors/connect_monitors_send.dart';
+import 'package:parker_touch/core/widget/snack_bar.dart';
+import 'package:parker_touch/provider/patient_provider/connect_monitor_provider/connect_monitor_provider.dart';
+import 'package:provider/provider.dart';
 
-class ConnectMonitors extends StatelessWidget {
+class ConnectMonitors extends StatefulWidget {
   const ConnectMonitors({super.key});
 
   @override
+  State<ConnectMonitors> createState() => _ConnectMonitorsState();
+}
+
+class _ConnectMonitorsState extends State<ConnectMonitors> {
+  final TextEditingController controller = TextEditingController();
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final TextEditingController _controller = TextEditingController();
+    final provider = Provider.of<ConnectMonitorProvider>(context);
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -36,35 +50,49 @@ class ConnectMonitors extends StatelessWidget {
                 text: 'Monitor’s Email or User name',
                 hintText: 'user name or email',
                 isSelected: false,
-                controller: _controller,
+                controller: controller,
                 borderColor: AppColors.textFieldBorderColor,
                 bgColor: AppColors.textFieldBgColor,
               ),
-              AppSpacing.h24,
-
-              Align(
-                child: _controller.text.isNotEmpty
-                    ? Text(
-                        'User Not Found! search again',
-                        style: FontManager.bodyText.copyWith(fontSize: 16.sp),
-                      )
-                    : Container(),
-              ),
 
               AppSpacing.h24,
 
-              CustomButton(
-                text: 'Search',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ConnectMonitorsSend(),
+              provider.isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryColor,
+                      ),
+                    )
+                  : CustomButton(
+                      text: 'Search',
+                      onTap: () async {
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: (context) => ConnectMonitorsSend(),
+                        //   ),
+                        // );
+
+                        FocusScope.of(context).unfocus();
+                        final emailOrUsername = controller.text.trim();
+
+                        bool result = await provider.connectMonitor(
+                          emailOrUsername,
+                        );
+                        if (result == true) {
+                          CustomSnackBar.showSuccess(
+                            context,
+                            'Monitor connected successfully',
+                          );
+                        } else {
+                          CustomSnackBar.showError(
+                            context,
+                            'Monitor not found',
+                          );
+                        }
+                      },
+                      leftIcon: 'assets/icons/search.png',
                     ),
-                  );
-                },
-                leftIcon: 'assets/icons/search.png',
-              ),
             ],
           ),
         ),

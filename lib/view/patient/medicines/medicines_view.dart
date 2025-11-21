@@ -52,6 +52,37 @@ class _MedicinesViewState extends State<MedicinesView> {
             image: "assets/images/man.png",
           ),
           AppSpacing.h14,
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("My Medicine", style: FontManager.connect),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const AddMedicine()),
+                    );
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      color: AppColors.optBlue,
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: Center(
+                      child: Icon(
+                        Icons.add,
+                        color: AppColors.white,
+                        size: 24.sp,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: medicineProvider.isLoading
                 ? Center(
@@ -107,66 +138,28 @@ class _MedicinesViewState extends State<MedicinesView> {
                       ],
                     ),
                   )
-                : CustomScrollView(
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.w),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text("My Medicine", style: FontManager.connect),
-                              InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const AddMedicine(),
-                                    ),
-                                  );
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.all(8.0),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.optBlue,
-                                    borderRadius: BorderRadius.circular(10.r),
-                                  ),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.add,
-                                      color: AppColors.white,
-                                      size: 24.sp,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                : ListView.builder(
+                    padding: EdgeInsets.only(top: 14.h),
+                    itemCount: medicineProvider.medicines.length,
+                    itemBuilder: (context, index) {
+                      final med = medicineProvider.medicines[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: 14.0,
+                          left: 16.0,
+                          right: 16.0,
                         ),
-                      ),
-                      SliverToBoxAdapter(child: AppSpacing.h14),
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          final med = medicineProvider.medicines[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: 14.0,
-                              left: 16.0,
-                              right: 16.0,
-                            ),
-                            child: MedicineCart(
-                              num: '${index + 1}.',
-                              medicineName: med.name ?? 'Unknown Medicine',
-                              mg: med.dosage ?? '0mg',
-                              time: med.frequency ?? 'N/A',
-                              days: med.durationDays ?? 'N/A',
-                              index: index,
-                              times: med.times,
-                            ),
-                          );
-                        }, childCount: medicineProvider.medicines.length),
-                      ),
-                    ],
+                        child: MedicineCart(
+                          num: '${index + 1}.',
+                          medicineName: med.name ?? 'Unknown Medicine',
+                          mg: med.dosage ?? '0mg',
+                          time: med.frequency ?? 'N/A',
+                          days: med.durationDays ?? 'N/A',
+                          index: index,
+                          times: med.times,
+                        ),
+                      );
+                    },
                   ),
           ),
         ],

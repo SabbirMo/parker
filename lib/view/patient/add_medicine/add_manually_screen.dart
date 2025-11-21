@@ -36,6 +36,15 @@ class _AddManuallyScreenState extends State<AddManuallyScreen> {
   };
 
   @override
+  void dispose() {
+    medicineNameController.dispose();
+    dosageController.dispose();
+    totalDaysController.dispose();
+    time1Controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final addMedicineProvider = Provider.of<AddMedicineManuallyProvider>(
       context,
@@ -120,6 +129,8 @@ class _AddManuallyScreenState extends State<AddManuallyScreen> {
                         : CustomButton(
                             text: 'Save Medicine',
                             onTap: () async {
+                              FocusScope.of(context).unfocus();
+
                               final name = medicineNameController.text.trim();
                               final dosage = dosageController.text.trim();
                               final totalDays = totalDaysController.text.trim();
@@ -176,10 +187,11 @@ class _AddManuallyScreenState extends State<AddManuallyScreen> {
                                 // Navigate back to medicines list
                                 Navigator.pop(context);
                               } else {
-                                CustomSnackBar.showError(
-                                  context,
-                                  'Failed to add medicine',
-                                );
+                                // Show specific error message from API
+                                final errorMsg =
+                                    addMedicineProvider.errorMessage ??
+                                    'Failed to add medicine';
+                                CustomSnackBar.showError(context, errorMsg);
                               }
                             },
                           ),

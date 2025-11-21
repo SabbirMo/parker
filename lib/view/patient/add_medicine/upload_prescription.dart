@@ -8,9 +8,12 @@ import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/back_button.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:parker_touch/core/widget/snack_bar.dart';
+import 'package:parker_touch/provider/auth/upload_prescription/upload_prescrition_provider.dart';
 import 'dart:io';
 
 import 'package:parker_touch/view/patient/add_medicine/confirm_medicine.dart';
+import 'package:provider/provider.dart';
 
 class UploadPrescription extends StatefulWidget {
   const UploadPrescription({super.key});
@@ -20,20 +23,47 @@ class UploadPrescription extends StatefulWidget {
 }
 
 class _UploadPrescriptionState extends State<UploadPrescription> {
+  File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
-  XFile? _pickedImage;
 
+  bool _isUploadingImage = false;
   Future<void> _pickImage() async {
     try {
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      if (image != null) {
+      final XFile? pickedImage = await _picker.pickImage(
+        source: ImageSource.gallery,
+      );
+      if (pickedImage != null) {
         setState(() {
-          _pickedImage = image;
+          _selectedImage = File(pickedImage.path);
+          _isUploadingImage = true;
         });
+
+        final uploadPrescription = Provider.of<UploadPrescriptionProvider>(
+          context,
+          listen: false,
+        );
+
+        bool success = await uploadPrescription.uploadPrescription(
+          _selectedImage!,
+        );
+        setState(() {
+          _isUploadingImage = false;
+        });
+        if (success) {
+          CustomSnackBar.showSuccess(context, "Image uploaded successfully");
+          debugPrint("Image uploaded successfully");
+        } else {
+          final errorMsg =
+              uploadPrescription.errorMessage ?? "Image upload failed";
+          CustomSnackBar.showError(context, errorMsg);
+          debugPrint("Image upload failed: $errorMsg");
+        }
       }
     } catch (e) {
-      // Handle error
-      print("Error picking image: $e");
+      setState(() {
+        _isUploadingImage = false;
+      });
+      debugPrint("Error picking image: $e");
     }
   }
 
@@ -70,52 +100,68 @@ class _UploadPrescriptionState extends State<UploadPrescription> {
                     radius: Radius.circular(4),
                     child: Container(
                       width: double.infinity,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 40.h,
-                      ),
-                      decoration: BoxDecoration(color: AppColors.white),
-                      child: Column(
-                        children: [
-                          _pickedImage != null
-                              ? Image.file(
-                                  File(_pickedImage!.path),
-                                  height: 100.h,
-                                  width: 100.w,
-                                  fit: BoxFit.cover,
-                                )
-                              : SvgPicture.asset('assets/svg/upload.svg'),
-                          AppSpacing.h16,
-                          Text(
-                            _pickedImage != null
-                                ? "Image Selected"
-                                : "Drag and drop or browse your Photo",
-                            style: FontManager.bodyText5,
-                          ),
-                        ],
-                      ),
+                      height: 200.h,
+                      decoration: _selectedImage != null
+                          ? BoxDecoration(
+                              color: AppColors.white,
+                              image: DecorationImage(
+                                image: FileImage(_selectedImage!),
+                                fit: BoxFit.contain,
+                              ),
+                            )
+                          : BoxDecoration(color: AppColors.white),
+                      child: _selectedImage != null
+                          ? (_isUploadingImage
+                                ? Container(
+                                    color: Colors.black45,
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: AppColors.white,
+                                      ),
+                                    ),
+                                  )
+                                : null)
+                          : Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 40.h,
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset('assets/svg/upload.svg'),
+                                  AppSpacing.h16,
+                                  Text(
+                                    "Drag and drop or browse your Photo",
+                                    style: FontManager.bodyText5,
+                                  ),
+                                ],
+                              ),
+                            ),
                     ),
                   ),
                 ),
               ),
               AppSpacing.h36,
-              CustomButton(
-                text: "Scan Prescription",
-                // onTap: _pickedImage != null
-                //     ? () {
-                //         // Handle scan prescription logic here
-                //       }
-                //     : null,
-                // bgColor: _pickedImage != null
-                //     ? AppColors.primaryColor
-                //     : AppColors.grey, // Gray color when disabled
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ConfirmMedicine()),
-                  );
-                },
-              ),
+              _isUploadingImage
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryColor,
+                      ),
+                    )
+                  : CustomButton(
+                      text: "Scan Prescription",
+                      onTap: _selectedImage != null
+                          ? () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ConfirmMedicine(),
+                                ),
+                              );
+                            }
+                          : null,
+                    ),
             ],
           ),
         ),

@@ -213,7 +213,6 @@ class _EditProfileState extends State<EditProfile> {
                                     context,
                                     'Profile updated successfully',
                                   );
-                                  Navigator.pop(context);
                                 } else {
                                   CustomSnackBar.showError(
                                     context,

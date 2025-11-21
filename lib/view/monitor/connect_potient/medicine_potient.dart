@@ -119,34 +119,40 @@ class MedicineCart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Debug print to check times array
+    debugPrint('MedicineCart - times: $times');
+    debugPrint('MedicineCart - times length: ${times?.length}');
+
     List<Widget> timeWidgets = [];
 
     if (times != null && times!.isNotEmpty) {
-      for (int i = 0; i < times!.length; i++) {
-        timeWidgets.add(Image.asset('assets/icons/ring.png'));
-        timeWidgets.add(AppSpacing.w4);
-        timeWidgets.add(Text(times![i], style: FontManager.bodyText5));
+      // Parse times - handle both array format and space-separated string
+      List<String> parsedTimes = [];
 
-        if (i < times!.length - 1) {
+      for (var timeStr in times!) {
+        // Split by spaces (one or more) and filter empty strings
+        var splitTimes = timeStr
+            .split(RegExp(r'\s+'))
+            .where((t) => t.trim().isNotEmpty)
+            .toList();
+        parsedTimes.addAll(splitTimes);
+      }
+
+      debugPrint('Parsed times: $parsedTimes (${parsedTimes.length} items)');
+
+      for (int i = 0; i < parsedTimes.length; i++) {
+        timeWidgets.add(Image.asset('assets/icons/clock.png', width: 20));
+        timeWidgets.add(AppSpacing.w4);
+        timeWidgets.add(
+          Text(parsedTimes[i].trim(), style: FontManager.bodyText5),
+        );
+
+        if (i < parsedTimes.length - 1) {
           timeWidgets.add(AppSpacing.w10);
         }
       }
     } else {
-      // Fallback to index-based displa
-      int itemCount = index != null && index! > 0 ? index! : 1;
-      // Limit to max 3 items
-      itemCount = itemCount > 3 ? 3 : itemCount;
-
-      for (int i = 0; i < itemCount; i++) {
-        timeWidgets.add(Image.asset('assets/icons/ring.png'));
-        timeWidgets.add(AppSpacing.w4);
-        timeWidgets.add(Text('10:00 AM', style: FontManager.bodyText5));
-
-        // Add spacing between items (except after the last one)
-        if (i < itemCount - 1) {
-          timeWidgets.add(AppSpacing.w10);
-        }
-      }
+      debugPrint('Times is null or empty');
     }
 
     return Container(
@@ -183,7 +189,14 @@ class MedicineCart extends StatelessWidget {
               AppSpacing.w6,
               Image.asset('assets/icons/clock.png', width: 20),
               AppSpacing.w4,
-              Text(time, style: FontManager.bodyText5),
+              Flexible(
+                child: Text(
+                  time,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: FontManager.bodyText5,
+                ),
+              ),
               AppSpacing.w6,
               Image.asset('assets/icons/clender.png'),
               AppSpacing.w4,
@@ -195,11 +208,14 @@ class MedicineCart extends StatelessWidget {
               ),
             ],
           ),
-          AppSpacing.h12,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: timeWidgets,
-          ),
+
+          if (timeWidgets.isNotEmpty) ...[
+            AppSpacing.h12,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: timeWidgets,
+            ),
+          ],
         ],
       ),
     );
