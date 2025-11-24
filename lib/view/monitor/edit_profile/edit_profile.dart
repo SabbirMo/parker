@@ -28,6 +28,11 @@ class _EditProfileState extends State<EditProfile> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _ageController = TextEditingController();
 
+  bool get _isMonitor {
+    final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+    return loginProvider.role == 'monitor';
+  }
+
   @override
   void initState() {
     super.initState();
@@ -176,7 +181,10 @@ class _EditProfileState extends State<EditProfile> {
                       hintText: '27 years old',
                       controller: _ageController,
                       borderColor: AppColors.textFieldBorderColor,
-                      bgColor: AppColors.textFieldBgColor,
+                      bgColor: _isMonitor
+                          ? Color(0xff5E5D5D).withValues(alpha: 0.1)
+                          : AppColors.textFieldBgColor,
+                      enabled: !_isMonitor,
                     ),
                     AppSpacing.h4,
                     CustomTextfield(
@@ -200,24 +208,71 @@ class _EditProfileState extends State<EditProfile> {
                               onTap: () async {
                                 final fullName = _fullNameController.text
                                     .trim();
-                                final age = int.parse(
-                                  _ageController.text.trim(),
+
+                                if (fullName.isEmpty) {
+                                  CustomSnackBar.showError(
+                                    context,
+                                    'Please enter your full name',
+                                  );
+                                  return;
+                                }
+
+                                // Only get age if not monitor
+                                int age;
+                                if (!_isMonitor) {
+                                  final ageText = _ageController.text.trim();
+                                  if (ageText.isEmpty) {
+                                    CustomSnackBar.showError(
+                                      context,
+                                      'Please enter your age',
+                                    );
+                                    return;
+                                  }
+                                  age = int.tryParse(ageText) ?? 0;
+                                  if (age == 0) {
+                                    CustomSnackBar.showError(
+                                      context,
+                                      'Please enter a valid age',
+                                    );
+                                    return;
+                                  }
+                                } else {
+                                  // For monitor, use age 1 (backend might reject 0)
+                                  age = 1;
+                                }
+
+                                debugPrint(
+                                  'Updating profile: fullName=$fullName, age=$age, isMonitor=$_isMonitor',
                                 );
 
                                 final success = await editProfile.editProfile(
                                   fullName,
                                   age,
                                 );
+
+                                debugPrint('Profile update result: $success');
+
                                 if (success) {
                                   CustomSnackBar.showSuccess(
                                     context,
                                     'Profile updated successfully',
                                   );
-                                } else {
-                                  CustomSnackBar.showError(
-                                    context,
-                                    'Failed to update profile',
+                                  // Navigate back after successful update
+                                  await Future.delayed(
+                                    Duration(milliseconds: 500),
                                   );
+                                  if (context.mounted) {
+                                    Navigator.pop(
+                                      context,
+                                      true,
+                                    ); // Return true to indicate success
+                                  }
+                                } else {
+                                  final errorMsg =
+                                      editProfile.errorMessage ??
+                                      'Failed to update profile';
+                                  debugPrint('Error message: $errorMsg');
+                                  CustomSnackBar.showError(context, errorMsg);
                                 }
                               },
                             ),

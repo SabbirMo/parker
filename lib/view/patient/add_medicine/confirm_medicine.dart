@@ -4,10 +4,51 @@ import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/back_button.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
+import 'package:parker_touch/core/widget/snack_bar.dart';
+import 'package:parker_touch/provider/patient_provider/save_scan_prescription_provider.dart';
 import 'package:parker_touch/view/monitor/connect_potient/medicine_potient.dart';
+import 'package:provider/provider.dart';
 
-class ConfirmMedicine extends StatelessWidget {
-  const ConfirmMedicine({super.key});
+class ConfirmMedicine extends StatefulWidget {
+  final List<MedicineData>? medicines;
+
+  const ConfirmMedicine({super.key, this.medicines});
+
+  @override
+  State<ConfirmMedicine> createState() => _ConfirmMedicineState();
+}
+
+class _ConfirmMedicineState extends State<ConfirmMedicine> {
+  Future<void> _saveMedicines() async {
+    if (widget.medicines == null || widget.medicines!.isEmpty) {
+      CustomSnackBar.showError(context, 'No medicines to save');
+      return;
+    }
+
+    final provider = Provider.of<SaveScanPrescriptionProvider>(
+      context,
+      listen: false,
+    );
+    bool success = await provider.saveScanPrescription(widget.medicines!);
+
+    if (!mounted) return;
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            provider.successMessage ?? 'Medicines saved successfully!',
+          ),
+        ),
+      );
+      Navigator.pop(context);
+    } else {
+      CustomSnackBar.showError(
+        context,
+        provider.errorMessage ?? 'Failed to save medicines',
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,47 +63,37 @@ class ConfirmMedicine extends StatelessWidget {
               AppSpacing.h14,
               Text('Confirm Medicine', style: FontManager.connect),
               AppSpacing.h24,
-              const MedicineCart(
-                num: '1.',
-                medicineName: ' Paracetamol',
-                mg: '500mg',
-                time: '3 times',
-                days: '5 days',
-                color: AppColors.white,
-                index: 2,
+              Expanded(
+                child: widget.medicines != null && widget.medicines!.isNotEmpty
+                    ? ListView.separated(
+                        itemCount: widget.medicines!.length,
+                        separatorBuilder: (context, index) => AppSpacing.h14,
+                        itemBuilder: (context, index) {
+                          final medicine = widget.medicines![index];
+                          return MedicineCart(
+                            num: '${index + 1}.',
+                            medicineName: medicine.name,
+                            mg: medicine.dosage,
+                            time: medicine.frequency,
+                            days: '${medicine.durationDays} days',
+                            color: AppColors.white,
+                            index: index % 4,
+                          );
+                        },
+                      )
+                    : const Center(child: Text('No medicines to display')),
               ),
               AppSpacing.h14,
-              const MedicineCart(
-                num: '2.',
-                medicineName: ' Omeprazole',
-                mg: '500mg',
-                time: '3 times',
-                days: '5 days',
-                color: AppColors.white,
-                index: 3,
+              Consumer<SaveScanPrescriptionProvider>(
+                builder: (context, provider, child) {
+                  return provider.isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : CustomButton(
+                          text: 'Save Medicine',
+                          onTap: _saveMedicines,
+                        );
+                },
               ),
-              AppSpacing.h14,
-              const MedicineCart(
-                num: '3.',
-                medicineName: ' Cetirizine',
-                mg: '500mg',
-                time: '3 times',
-                days: '5 days',
-                color: AppColors.white,
-                index: 1,
-              ),
-              AppSpacing.h14,
-              const MedicineCart(
-                num: '4.',
-                medicineName: ' Amoxicillin',
-                mg: '500mg',
-                time: '3 times',
-                days: '5 days',
-                color: AppColors.white,
-                index: 3,
-              ),
-              Spacer(),
-              CustomButton(text: 'Save Medicine', onTap: () {}),
               AppSpacing.h38,
             ],
           ),

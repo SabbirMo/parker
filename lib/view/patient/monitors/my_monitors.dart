@@ -4,14 +4,35 @@ import 'package:parker_touch/core/constants/app_colors.dart';
 import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/header_section.dart';
+import 'package:parker_touch/provider/patient_provider/connect_monitor_provider/connect_monitor_provider.dart';
 import 'package:parker_touch/view/monitor/potients/request.dart';
 import 'package:parker_touch/view/patient/monitors/connect_monitors.dart';
+import 'package:provider/provider.dart';
 
-class MyMonitors extends StatelessWidget {
+class MyMonitors extends StatefulWidget {
   const MyMonitors({super.key});
 
   @override
+  State<MyMonitors> createState() => _MyMonitorsState();
+}
+
+class _MyMonitorsState extends State<MyMonitors> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<ConnectMonitorProvider>(
+        context,
+        listen: false,
+      );
+      provider.fetchPatientMonitors();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<ConnectMonitorProvider>(context);
+
     return Scaffold(
       body: Column(
         children: [
@@ -60,27 +81,87 @@ class MyMonitors extends StatelessWidget {
                       ],
                     ),
                     AppSpacing.h14,
-                    RequestCard(
-                      title: "Peter Johnson",
-                      subtitle: "sarah@gmail.com",
-                      status: 'Connected',
-                    ),
-                    AppSpacing.h14,
-                    RequestCard(
-                      title: "John parker",
-                      subtitle: "sarah@gmail.com",
-                      panding: 'Pending',
-                    ),
-                    AppSpacing.h14,
-                    RequestCard(
-                      title: "John parker",
-                      subtitle: "sarah@gmail.com",
-                      panding: "Decline",
-                      textColors: AppColors.textRed,
-                      textColor: AppColors.black1,
-                      declineColor: AppColors.redOpacity,
-                      status: "Accept",
-                    ),
+
+                    // Show loading indicator
+                    if (provider.isLoading)
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: CircularProgressIndicator(
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
+                      )
+                    // Show error message
+                    else if (provider.errorMessage != null)
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Text(
+                            provider.errorMessage!,
+                            style: FontManager.bodyText,
+                          ),
+                        ),
+                      )
+                    // Show monitors list
+                    else if (provider.monitorsList.isEmpty)
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Text(
+                            'No monitors found',
+                            style: FontManager.bodyText,
+                          ),
+                        ),
+                      )
+                    else
+                      ...provider.monitorsList.map((monitor) {
+                        String statusText = '';
+                        Color? statusBgColor;
+                        Color? statusTextColor;
+                        String? pendingText;
+                        Color? pendingBgColor;
+                        Color? pendingTextColor;
+
+                        if (monitor.status == 'accepted') {
+                          statusText = 'Connected';
+                          statusBgColor = AppColors.greenOpca;
+                          statusTextColor = AppColors.greenOp;
+                        } else if (monitor.status == 'pending' &&
+                            monitor.isOutgoing) {
+                          pendingText = 'Pending';
+                          pendingBgColor = AppColors.yellow;
+                          pendingTextColor = AppColors.yellow2;
+                        } else if (monitor.status == 'pending' &&
+                            !monitor.isOutgoing) {
+                          pendingText = 'Decline';
+                          pendingBgColor = AppColors.redOpacity;
+                          pendingTextColor = AppColors.textRed;
+                          statusText = 'Accept';
+                          statusBgColor = AppColors.greenOpca;
+                          statusTextColor = AppColors.greenOp;
+                        } else if (monitor.status == 'rejected') {
+                          pendingText = 'Declined';
+                          pendingBgColor = AppColors.redOpacity;
+                          pendingTextColor = AppColors.textRed;
+                        }
+
+                        return Column(
+                          children: [
+                            RequestCard(
+                              title: monitor.fullName,
+                              subtitle: monitor.email,
+                              status: statusText.isNotEmpty ? statusText : null,
+                              color: statusBgColor,
+                              textColor: statusTextColor,
+                              panding: pendingText,
+                              declineColor: pendingBgColor,
+                              textColors: pendingTextColor,
+                            ),
+                            AppSpacing.h14,
+                          ],
+                        );
+                      }).toList(),
                   ],
                 ),
               ),

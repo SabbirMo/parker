@@ -13,6 +13,7 @@ import 'package:parker_touch/core/widget/progress_bar_widget.dart';
 import 'package:parker_touch/view/patient/add_medicine/add_manually_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
+import 'package:parker_touch/provider/home_provider/home_provider.dart';
 import 'package:parker_touch/provider/patient_provider/medicine_list_provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,9 +24,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _progressCount = 0;
-  final int _maxProgress = 4;
-
   @override
   void initState() {
     super.initState();
@@ -35,6 +33,7 @@ class _HomePageState extends State<HomePage> {
         context,
         listen: false,
       );
+      final homeProvider = Provider.of<HomeProvider>(context, listen: false);
 
       if (loginProvider.accessToken != null) {
         debugPrint('Calling getNextMedicine API from HomePage');
@@ -43,16 +42,12 @@ class _HomePageState extends State<HomePage> {
             'Next Medicine Data: ${medicineProvider.nextMedicine?.name}',
           );
         });
+
+        // Call today summary API
+        debugPrint('Calling todaySummaryProgressBar API from HomePage');
+        homeProvider.todaySummaryProgressBar();
       } else {
         debugPrint('No access token available in HomePage');
-      }
-    });
-  }
-
-  void _incrementProgress() {
-    setState(() {
-      if (_progressCount < _maxProgress) {
-        _progressCount++;
       }
     });
   }
@@ -60,6 +55,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final medicineProvider = Provider.of<MedicineListProvider>(context);
+    final homeProvider = Provider.of<HomeProvider>(context);
     return Column(
       children: [
         // Fixed header section
@@ -103,7 +99,6 @@ class _HomePageState extends State<HomePage> {
                             )
                           : MedicineContainer(
                               nextMedicine: medicineProvider.nextMedicine,
-                              onTakeMedicine: _incrementProgress,
                             ),
 
                       AppSpacing.h16,
@@ -125,10 +120,19 @@ class _HomePageState extends State<HomePage> {
                               "Today's Summary",
                               style: FontManager.contTitle,
                             ),
-                            ProgressBarWidget(
-                              completed: _progressCount,
-                              total: _maxProgress,
-                            ),
+                            homeProvider.isLoading
+                                ? Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: CircularProgressIndicator(
+                                        color: AppColors.primaryColor,
+                                      ),
+                                    ),
+                                  )
+                                : ProgressBarWidget(
+                                    completed: homeProvider.taken,
+                                    total: homeProvider.total,
+                                  ),
                           ],
                         ),
                       ),

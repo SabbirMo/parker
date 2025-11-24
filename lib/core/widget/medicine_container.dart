@@ -6,13 +6,15 @@ import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/core/widget/show_dialog_widget.dart';
+import 'package:parker_touch/core/widget/snack_bar.dart';
+import 'package:parker_touch/provider/home_provider/home_provider.dart';
 import 'package:parker_touch/view/patient/home/model/patient_home_model.dart';
+import 'package:provider/provider.dart';
 
 class MedicineContainer extends StatefulWidget {
-  final VoidCallback? onTakeMedicine;
   final NextMedicine? nextMedicine;
 
-  const MedicineContainer({super.key, this.onTakeMedicine, this.nextMedicine});
+  const MedicineContainer({super.key, this.nextMedicine});
 
   @override
   State<MedicineContainer> createState() => _MedicineContainerState();
@@ -20,22 +22,30 @@ class MedicineContainer extends StatefulWidget {
 
 class _MedicineContainerState extends State<MedicineContainer> {
   bool _medicineTaken = false;
-  int _progressCount = 0;
-  final int _maxProgress = 4;
 
-  void _takeMedicine() {
-    // Call the callback function to update progress in parent
-    widget.onTakeMedicine?.call();
+  Future<void> _takeMedicine() async {
+    if (widget.nextMedicine == null) {
+      CustomSnackBar.showError(context, 'No medicine available');
+      return;
+    }
 
-    // Update local state for UI changes
-    setState(() {
-      if (_progressCount < _maxProgress) {
-        _progressCount++;
-        if (_progressCount == _maxProgress) {
-          _medicineTaken = true;
-        }
-      }
-    });
+    final homeProvider = Provider.of<HomeProvider>(context, listen: false);
+
+    bool result = await homeProvider.takeNowMedicine(
+      widget.nextMedicine!.medicineId,
+      widget.nextMedicine!.time,
+    );
+
+    if (result) {
+      CustomSnackBar.showSuccess(context, 'Medicine taken successfully');
+      // Refresh today's summary
+      await homeProvider.todaySummaryProgressBar();
+    } else {
+      CustomSnackBar.showError(
+        context,
+        homeProvider.errorMessage ?? 'Failed to take medicine',
+      );
+    }
   }
 
   @override
@@ -132,7 +142,9 @@ class _MedicineContainerState extends State<MedicineContainer> {
                   showDialog(
                     context: context,
                     builder: (_) {
-                      return ShowDialogWidget();
+                      return ShowDialogWidget(
+                        nextMedicine: widget.nextMedicine,
+                      );
                     },
                   );
                 },

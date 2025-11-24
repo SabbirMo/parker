@@ -24,3 +24,33 @@ class MedicineListModel {
     );
   }
 }
+
+// Monitor Item Model
+class MonitorItem {
+  final int id;
+  final String fullName;
+  final String email;
+  final String status;
+  final bool isOutgoing;
+  final int requestId;
+
+  MonitorItem({
+    required this.id,
+    required this.fullName,
+    required this.email,
+    required this.status,
+    required this.isOutgoing,
+    required this.requestId,
+  });
+
+  factory MonitorItem.fromJson(Map<String, dynamic> json) {
+    return MonitorItem(
+      id: json['id'] ?? 0,
+      fullName: json['full_name'] ?? '',
+      email: json['email'] ?? '',
+      status: json['status'] ?? '',
+      isOutgoing: json['is_outgoing'] ?? false,
+      requestId: json['request_id'] ?? 0,
+    );
+  }
+}

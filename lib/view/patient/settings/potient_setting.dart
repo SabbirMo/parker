@@ -36,11 +36,20 @@ class _PotientSettingState extends State<PotientSetting> {
               Text('Settings', style: FontManager.connect),
               AppSpacing.h10,
               InkWell(
-                onTap: () {
-                  Navigator.push(
+                onTap: () async {
+                  final result = await Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const EditProfile()),
                   );
+
+                  // Reload profile data if update was successful
+                  if (result == true && mounted) {
+                    final loginProvider = Provider.of<LoginProvider>(
+                      context,
+                      listen: false,
+                    );
+                    await loginProvider.fetchUserProfile();
+                  }
                 },
                 child: Container(
                   padding: EdgeInsets.all(12),

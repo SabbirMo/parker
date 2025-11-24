@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:parker_touch/core/base_url/base_url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -25,7 +26,7 @@ class NewPasswordProvider extends ChangeNotifier {
 
   // You can add more logic related to password change here
   bool isLoading = false;
-  final String baseUrl = 'https://1kklrhx5-8000.inc1.devtunnels.ms';
+  //final String baseUrl = 'https://1kklrhx5-8000.inc1.devtunnels.ms';
 
   Future<bool> currntPasswordChange(
     String oldPassword,

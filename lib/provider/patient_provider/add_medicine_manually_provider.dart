@@ -2,13 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:parker_touch/core/base_url/base_url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Provider
 class AddMedicineManuallyProvider extends ChangeNotifier {
   bool isLoading = false;
   String? errorMessage;
-  final String baseUrl = 'https://1kklrhx5-8000.inc1.devtunnels.ms';
+  // final String baseUrl = 'https://1kklrhx5-8000.inc1.devtunnels.ms';
 
   Future<bool> addMedicineManually(
     String name,

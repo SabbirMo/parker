@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:parker_touch/core/base_url/base_url.dart';
 import 'package:parker_touch/view/patient/home/model/patient_home_model.dart';
 import 'package:parker_touch/view/patient/medicines/model/medicine_list_model.dart';
 import 'package:http/http.dart' as http;
@@ -10,7 +11,7 @@ class MedicineListProvider extends ChangeNotifier {
   List<MedicineListModel> medicines = [];
   String? errorMessage;
 
-  final String baseUrl = 'https://1kklrhx5-8000.inc1.devtunnels.ms';
+  //final String baseUrl = 'https://1kklrhx5-8000.inc1.devtunnels.ms';
 
   Future<void> fetchMedicines(String accessToken) async {
     isLoading = true;

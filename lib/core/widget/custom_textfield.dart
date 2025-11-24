@@ -54,6 +54,7 @@ class CustomTextfield extends StatelessWidget {
             border: Border.all(color: borderColor ?? Color(0xffd6d9dd)),
           ),
           child: TextField(
+            focusNode: FocusNode(),
             controller: controller,
             textInputAction: TextInputAction.next,
             scrollPadding: EdgeInsets.all(8),

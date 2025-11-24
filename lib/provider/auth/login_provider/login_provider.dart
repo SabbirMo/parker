@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:parker_touch/core/base_url/base_url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -16,6 +17,7 @@ class LoginProvider extends ChangeNotifier {
 
   // Login state
   bool isLoading = false;
+  String? errorMessage;
   String? accessToken;
   String? refreshToken;
   String? role;
@@ -23,7 +25,7 @@ class LoginProvider extends ChangeNotifier {
   String? fullName;
   String? profilePicture;
 
-  final String baseUrl = 'https://1kklrhx5-8000.inc1.devtunnels.ms';
+  //final String baseUrl = 'https://1kklrhx5-8000.inc1.devtunnels.ms';
 
   // -------------------- LOGIN --------------------
   Future<bool> loginUser(String email, String password) async {
@@ -84,6 +86,7 @@ class LoginProvider extends ChangeNotifier {
     role = prefs.getString("role");
     email = prefs.getString("email");
     fullName = prefs.getString("fullName");
+    profilePicture = prefs.getString("profilePicture");
     notifyListeners();
   }
 
@@ -102,15 +105,26 @@ class LoginProvider extends ChangeNotifier {
   Future<bool> editProfile(String fullName, int age) async {
     try {
       isLoading = true;
+      errorMessage = null;
       notifyListeners();
+
       final headers = await getAuthHeaders();
+
+      debugPrint('Editing profile: fullName=$fullName, age=$age');
+      debugPrint('Headers: $headers');
+
       final response = await http.put(
         Uri.parse('$baseUrl/api/users/edit-profile/'),
         headers: headers,
         body: jsonEncode({'full_name': fullName, 'age': age}),
       );
+
       isLoading = false;
       notifyListeners();
+
+      debugPrint('Edit profile response: ${response.statusCode}');
+      debugPrint('Response body: ${response.body}');
+
       if (response.statusCode == 200) {
         this.fullName = fullName;
 
@@ -121,12 +135,20 @@ class LoginProvider extends ChangeNotifier {
         notifyListeners();
         return true;
       } else {
+        // Parse error message from response
+        try {
+          final errorData = jsonDecode(response.body);
+          errorMessage = errorData['detail'] ?? errorData.toString();
+        } catch (e) {
+          errorMessage = 'Profile update failed';
+        }
         debugPrint('Profile update failed: ${response.body}');
         return false;
       }
     } catch (e) {
       debugPrint('Error updating profile: $e');
       isLoading = false;
+      errorMessage = 'An error occurred: $e';
       notifyListeners();
       return false;
     }
@@ -155,6 +177,12 @@ class LoginProvider extends ChangeNotifier {
       debugPrint("Upload Response: ${responseData.body}");
 
       if (response.statusCode == 200) {
+        final data = jsonDecode(responseData.body);
+        if (data['profile_picture'] != null) {
+          profilePicture = data['profile_picture'];
+          await prefs.setString('profilePicture', profilePicture!);
+          notifyListeners();
+        }
         return true;
       } else {
         return false;
@@ -162,6 +190,40 @@ class LoginProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('Upload Error: $e');
       return false;
+    }
+  }
+
+  // -------------------- FETCH USER PROFILE --------------------
+  Future<void> fetchUserProfile() async {
+    try {
+      final headers = await getAuthHeaders();
+      final response = await http.get(
+        Uri.parse('$baseUrl/api/users/profile/'),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        fullName = data['full_name'];
+        email = data['email'];
+        role = data['role'];
+        profilePicture = data['profile_picture'];
+
+        // Update stored values
+        final prefs = await SharedPreferences.getInstance();
+        if (fullName != null) await prefs.setString('fullName', fullName!);
+        if (email != null) await prefs.setString('email', email!);
+        if (role != null) await prefs.setString('role', role!);
+        if (profilePicture != null) {
+          await prefs.setString('profilePicture', profilePicture!);
+        }
+
+        notifyListeners();
+      } else {
+        debugPrint('Failed to fetch user profile: ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('Error fetching user profile: $e');
     }
   }
 

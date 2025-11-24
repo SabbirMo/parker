@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:parker_touch/core/base_url/base_url.dart';
 
 class PatientProvider extends ChangeNotifier {
   bool _password = true;
@@ -21,7 +22,7 @@ class PatientProvider extends ChangeNotifier {
 
   //signup patient
   bool isloading = false;
-  final baseUrl = 'https://1kklrhx5-8000.inc1.devtunnels.ms';
+  // final baseUrl = 'https://1kklrhx5-8000.inc1.devtunnels.ms';
 
   Future<String?> signupPatient(
     String name,

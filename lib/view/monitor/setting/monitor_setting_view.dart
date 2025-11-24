@@ -23,6 +23,30 @@ class MonitorSettingView extends StatefulWidget {
 class _MonitorSettingViewState extends State<MonitorSettingView> {
   bool pushNotification = true;
   bool voiceNotification = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch latest user data when page loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<LoginProvider>(context, listen: false);
+      provider.fetchUserProfile();
+    });
+  }
+
+  Future<void> _navigateToEditProfile() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const EditProfile()),
+    );
+
+    // If profile was updated, refresh the data
+    if (result == true && mounted) {
+      final provider = Provider.of<LoginProvider>(context, listen: false);
+      await provider.fetchUserProfile();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,12 +60,7 @@ class _MonitorSettingViewState extends State<MonitorSettingView> {
               Text('Settings', style: FontManager.connect),
               AppSpacing.h10,
               InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const EditProfile()),
-                  );
-                },
+                onTap: _navigateToEditProfile,
                 child: Container(
                   padding: EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -53,33 +72,52 @@ class _MonitorSettingViewState extends State<MonitorSettingView> {
                     children: [
                       Row(
                         children: [
-                          Container(
-                            padding: EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.blue.withValues(alpha: 0.2),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Center(
-                              child: Image.asset('assets/icons/person.png'),
-                            ),
+                          Consumer<LoginProvider>(
+                            builder: (context, uploadProfile, child) =>
+                                ClipOval(
+                                  child: Container(
+                                    width: 50.w,
+                                    height: 50.h,
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.withValues(alpha: 0.2),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: uploadProfile.profilePicture != null
+                                        ? Image.network(
+                                            uploadProfile.profilePicture!,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Padding(
+                                            padding: EdgeInsets.all(12),
+                                            child: Image.asset(
+                                              'assets/icons/person.png',
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                  ),
+                                ),
                           ),
                           AppSpacing.w20,
                           Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Enola Parker",
-                                  style: FontManager.loginStyle.copyWith(
-                                    fontSize: 20.sp,
-                                    color: AppColors.black1,
-                                  ),
-                                ),
-                                Text(
-                                  'enola@gmail.com',
-                                  style: FontManager.contSubTitle,
-                                ),
-                              ],
+                            child: Consumer<LoginProvider>(
+                              builder: (context, loginProvider, child) {
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      loginProvider.fullName ?? "Enola Parker",
+                                      style: FontManager.loginStyle.copyWith(
+                                        fontSize: 20.sp,
+                                        color: AppColors.black1,
+                                      ),
+                                    ),
+                                    Text(
+                                      loginProvider.email ?? 'enola@gmail.com',
+                                      style: FontManager.contSubTitle,
+                                    ),
+                                  ],
+                                );
+                              },
                             ),
                           ),
                         ],
