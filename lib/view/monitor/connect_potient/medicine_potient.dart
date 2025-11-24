@@ -119,10 +119,6 @@ class MedicineCart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Debug print to check times array
-    debugPrint('MedicineCart - times: $times');
-    debugPrint('MedicineCart - times length: ${times?.length}');
-
     List<Widget> timeWidgets = [];
 
     if (times != null && times!.isNotEmpty) {
@@ -138,8 +134,6 @@ class MedicineCart extends StatelessWidget {
         parsedTimes.addAll(splitTimes);
       }
 
-      debugPrint('Parsed times: $parsedTimes (${parsedTimes.length} items)');
-
       for (int i = 0; i < parsedTimes.length; i++) {
         timeWidgets.add(Image.asset('assets/icons/clock.png', width: 20));
         timeWidgets.add(AppSpacing.w4);
@@ -151,8 +145,6 @@ class MedicineCart extends StatelessWidget {
           timeWidgets.add(AppSpacing.w10);
         }
       }
-    } else {
-      debugPrint('Times is null or empty');
     }
 
     return Container(

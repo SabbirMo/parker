@@ -22,12 +22,12 @@ class HeaderSection extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     return Container(
       width: double.infinity,
-      height: size.height * 0.20,
+      height: size.height * 0.15.h,
       decoration: BoxDecoration(
         color: AppColors.primaryColor,
         borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(30),
-          bottomRight: Radius.circular(30),
+          bottomLeft: Radius.circular(30.r),
+          bottomRight: Radius.circular(30.r),
         ),
         boxShadow: [
           BoxShadow(
@@ -62,7 +62,7 @@ class HeaderSection extends StatelessWidget {
                   text,
                   style: FontManager.subtitle.copyWith(
                     color: AppColors.white,
-                    fontSize: 14,
+                    fontSize: 14.sp,
                   ),
                 ),
               ],

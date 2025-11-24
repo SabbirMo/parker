@@ -8,6 +8,7 @@ import 'package:parker_touch/provider/auth/forgot_provider/forgot_password_provi
 import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
 import 'package:parker_touch/provider/auth/signup_provider/monitor_provider.dart';
 import 'package:parker_touch/provider/auth/signup_provider/patient_provider.dart';
+import 'package:parker_touch/provider/auth/upload_prescription/save_scan_prescription_provider.dart';
 import 'package:parker_touch/provider/auth/upload_prescription/upload_prescrition_provider.dart';
 import 'package:parker_touch/provider/home_provider/home_provider.dart';
 import 'package:parker_touch/provider/patient_provider/add_medicine_manually_provider.dart';
@@ -41,6 +42,7 @@ void main() async {
           ChangeNotifierProvider(create: (_) => ConnectMonitorProvider()),
           ChangeNotifierProvider(create: (_) => SendRequestMonitorProvider()),
           ChangeNotifierProvider(create: (_) => HomeProvider()),
+          ChangeNotifierProvider(create: (_) => SaveScanPrescriptionProvider()),
         ],
         child: const MyApp(),
       ),

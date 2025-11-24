@@ -6,20 +6,45 @@ import 'package:parker_touch/core/constants/app_string.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/header_section.dart';
 import 'package:parker_touch/core/widget/progress_bar_widget.dart';
+import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
 import 'package:parker_touch/view/monitor/connect_potient/medicine_potient.dart';
+import 'package:provider/provider.dart';
 
-class HomeMonitor extends StatelessWidget {
+class HomeMonitor extends StatefulWidget {
   const HomeMonitor({super.key});
+
+  @override
+  State<HomeMonitor> createState() => _HomeMonitorState();
+}
+
+class _HomeMonitorState extends State<HomeMonitor> {
+  String getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour >= 5 && hour < 12) {
+      return AppString.goodMorning;
+    } else if (hour >= 12 && hour < 17) {
+      return 'Good Afternoon';
+    } else if (hour >= 17 && hour < 21) {
+      return 'Good Evening';
+    } else {
+      return 'Good Night';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
-          HeaderSection(
-            title: AppString.goodMorning,
-            subtitle: AppString.enolaParker,
-            text: AppString.monitoringPatient,
+          Consumer(
+            builder: (context, LoginProvider loginProvider, Widget? child) =>
+                HeaderSection(
+                  title: getGreeting(),
+                  subtitle: loginProvider.fullName != null
+                      ? loginProvider.fullName!
+                      : AppString.enolaParker,
+                  text: AppString.monitoringPatient,
+                ),
           ),
 
           AppSpacing.h6,

@@ -176,17 +176,17 @@ class _EditProfileState extends State<EditProfile> {
                       enabled: false,
                     ),
                     AppSpacing.h4,
-                    CustomTextfield(
-                      text: 'Age',
-                      hintText: '27 years old',
-                      controller: _ageController,
-                      borderColor: AppColors.textFieldBorderColor,
-                      bgColor: _isMonitor
-                          ? Color(0xff5E5D5D).withValues(alpha: 0.1)
-                          : AppColors.textFieldBgColor,
-                      enabled: !_isMonitor,
-                    ),
-                    AppSpacing.h4,
+                    // Hide Age field if user is a monitor
+                    if (!_isMonitor) ...[
+                      CustomTextfield(
+                        text: 'Age',
+                        hintText: '27 years old',
+                        controller: _ageController,
+                        borderColor: AppColors.textFieldBorderColor,
+                        bgColor: AppColors.textFieldBgColor,
+                      ),
+                      AppSpacing.h4,
+                    ],
                     CustomTextfield(
                       text: 'Account Type',
                       hintText: '',

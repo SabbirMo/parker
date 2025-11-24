@@ -27,6 +27,8 @@ class _UploadPrescriptionState extends State<UploadPrescription> {
   final ImagePicker _picker = ImagePicker();
 
   bool _isUploadingImage = false;
+  bool _isNavigating = false;
+
   Future<void> _pickImage() async {
     try {
       final XFile? pickedImage = await _picker.pickImage(
@@ -143,25 +145,68 @@ class _UploadPrescriptionState extends State<UploadPrescription> {
                 ),
               ),
               AppSpacing.h36,
-              _isUploadingImage
-                  ? Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.primaryColor,
-                      ),
-                    )
-                  : CustomButton(
-                      text: "Scan Prescription",
-                      onTap: _selectedImage != null
-                          ? () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ConfirmMedicine(),
-                                ),
-                              );
-                            }
-                          : null,
-                    ),
+              Consumer<UploadPrescriptionProvider>(
+                builder: (context, uploadProvider, child) {
+                  return _isUploadingImage || _isNavigating
+                      ? Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.primaryColor,
+                          ),
+                        )
+                      : CustomButton(
+                          text: "Scan Prescription",
+                          onTap: _selectedImage != null
+                              ? () async {
+                                  if (_isNavigating) return;
+
+                                  debugPrint(
+                                    "Scanned medicines count: ${uploadProvider.scannedMedicines?.length ?? 0}",
+                                  );
+
+                                  if (uploadProvider.scannedMedicines != null &&
+                                      uploadProvider
+                                          .scannedMedicines!
+                                          .isNotEmpty) {
+                                    setState(() {
+                                      _isNavigating = true;
+                                    });
+
+                                    debugPrint(
+                                      "Navigating to ConfirmMedicine with ${uploadProvider.scannedMedicines!.length} medicines",
+                                    );
+
+                                    // Give UI time to show loading
+                                    await Future.delayed(
+                                      Duration(milliseconds: 300),
+                                    );
+
+                                    if (!mounted) return;
+
+                                    setState(() {
+                                      _isNavigating = false;
+                                    });
+
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ConfirmMedicine(
+                                          medicines:
+                                              uploadProvider.scannedMedicines,
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    debugPrint("No scanned medicines found");
+                                    CustomSnackBar.showError(
+                                      context,
+                                      'No medicines found in the prescription. Please try uploading again.',
+                                    );
+                                  }
+                                }
+                              : null,
+                        );
+                },
+              ),
             ],
           ),
         ),

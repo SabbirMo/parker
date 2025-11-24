@@ -5,7 +5,7 @@ import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/back_button.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/core/widget/snack_bar.dart';
-import 'package:parker_touch/provider/patient_provider/save_scan_prescription_provider.dart';
+import 'package:parker_touch/provider/auth/upload_prescription/save_scan_prescription_provider.dart';
 import 'package:parker_touch/view/monitor/connect_potient/medicine_potient.dart';
 import 'package:provider/provider.dart';
 
@@ -34,13 +34,7 @@ class _ConfirmMedicineState extends State<ConfirmMedicine> {
     if (!mounted) return;
 
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            provider.successMessage ?? 'Medicines saved successfully!',
-          ),
-        ),
-      );
+      CustomSnackBar.showSuccess(context, 'Medicines saved successfully');
       Navigator.pop(context);
     } else {
       CustomSnackBar.showError(
@@ -66,6 +60,8 @@ class _ConfirmMedicineState extends State<ConfirmMedicine> {
               Expanded(
                 child: widget.medicines != null && widget.medicines!.isNotEmpty
                     ? ListView.separated(
+                        addAutomaticKeepAlives: false,
+                        addRepaintBoundaries: true,
                         itemCount: widget.medicines!.length,
                         separatorBuilder: (context, index) => AppSpacing.h14,
                         itemBuilder: (context, index) {
@@ -78,6 +74,7 @@ class _ConfirmMedicineState extends State<ConfirmMedicine> {
                             days: '${medicine.durationDays} days',
                             color: AppColors.white,
                             index: index % 4,
+                            times: medicine.times,
                           );
                         },
                       )

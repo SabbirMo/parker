@@ -3,12 +3,14 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:parker_touch/core/base_url/base_url.dart';
+import 'package:parker_touch/provider/auth/upload_prescription/save_scan_prescription_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class UploadPrescriptionProvider extends ChangeNotifier {
   bool isLoading = false;
   String? errorMessage;
+  List<MedicineData>? scannedMedicines;
 
   //final String baseUrl = 'https://1kklrhx5-8000.inc1.devtunnels.ms';
 
@@ -57,6 +59,38 @@ class UploadPrescriptionProvider extends ChangeNotifier {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         errorMessage = null;
+
+        // Parse scanned medicine data
+        try {
+          final responseJson = jsonDecode(responseData.body);
+          debugPrint("Response JSON: $responseJson");
+
+          if (responseJson is Map<String, dynamic> &&
+              responseJson.containsKey('medicines')) {
+            final medicinesJson = responseJson['medicines'] as List;
+            debugPrint("Medicines JSON: $medicinesJson");
+
+            scannedMedicines = medicinesJson.map((medicine) {
+              return MedicineData(
+                name: medicine['name'] ?? '',
+                dosage: medicine['dosage'] ?? '',
+                frequency: medicine['frequency'] ?? '',
+                times: List<String>.from(medicine['times'] ?? []),
+                whenToTake: medicine['when_to_take'] ?? 'Not mentioned',
+                durationDays: medicine['duration_days']?.toString() ?? '0',
+              );
+            }).toList();
+            debugPrint("Scanned ${scannedMedicines?.length} medicines");
+            notifyListeners();
+          } else {
+            debugPrint("Response does not contain 'medicines' key");
+            scannedMedicines = null;
+          }
+        } catch (e) {
+          debugPrint("Error parsing scanned medicines: $e");
+          scannedMedicines = null;
+        }
+
         return true;
       } else {
         // Parse error message from API
