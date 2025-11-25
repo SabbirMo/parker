@@ -235,7 +235,7 @@ class TodayProgress {
     return TodayProgress(
       taken: json['taken'] ?? 0,
       total: json['total'] ?? 0,
-      percentage: json['percentage'] ?? 0,
+      percentage: (json['percentage'] ?? 0).toInt(),
       hasMissedDose: json['has_missed_dose'] ?? false,
       missedMedicines: List<String>.from(json['missed_medicines'] ?? []),
       lastTakenTime: json['last_taken_time'],

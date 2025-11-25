@@ -131,7 +131,9 @@ class PatientCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 22.r,
-                backgroundImage: AssetImage(cricleIcon),
+                backgroundImage: cricleIcon.startsWith('http')
+                    ? NetworkImage(cricleIcon)
+                    : AssetImage(cricleIcon) as ImageProvider,
               ),
               AppSpacing.w12,
               Column(
