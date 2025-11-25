@@ -3,7 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:parker_touch/core/constants/app_colors.dart';
 import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
+import 'package:parker_touch/core/time/time_get_greeting.dart';
 import 'package:parker_touch/core/widget/header_section.dart';
+import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
 import 'package:parker_touch/provider/patient_provider/connect_monitor_provider/connect_monitor_provider.dart';
 import 'package:parker_touch/view/monitor/potients/request.dart';
 import 'package:parker_touch/view/patient/monitors/connect_monitors.dart';
@@ -33,14 +35,30 @@ class _MyMonitorsState extends State<MyMonitors> {
   Widget build(BuildContext context) {
     final provider = Provider.of<ConnectMonitorProvider>(context);
 
+    debugPrint('MyMonitors - isLoading: ${provider.isLoading}');
+    debugPrint('MyMonitors - errorMessage: ${provider.errorMessage}');
+    debugPrint(
+      'MyMonitors - monitorsList length: ${provider.monitorsList.length}',
+    );
+    if (provider.monitorsList.isNotEmpty) {
+      debugPrint(
+        'MyMonitors - First monitor status: ${provider.monitorsList.first.status}',
+      );
+    }
+
     return Scaffold(
       body: Column(
         children: [
-          HeaderSection(
-            title: "Good Morning",
-            subtitle: "Mr. Parker",
-            text: "Stay on track with your medications",
-            image: "assets/images/man.png",
+          Consumer(
+            builder: (context, LoginProvider loginProvider, Widget? child) =>
+                HeaderSection(
+                  title: TimeGetGreeting.getGreeting(),
+                  subtitle: loginProvider.fullName != null
+                      ? loginProvider.fullName!
+                      : "Mr. Parker",
+                  text: "Stay on track with your medications",
+                  image: "assets/images/man.png",
+                ),
           ),
           AppSpacing.h14,
           Expanded(
@@ -115,53 +133,41 @@ class _MyMonitorsState extends State<MyMonitors> {
                         ),
                       )
                     else
-                      ...provider.monitorsList.map((monitor) {
-                        String statusText = '';
-                        Color? statusBgColor;
-                        Color? statusTextColor;
-                        String? pendingText;
-                        Color? pendingBgColor;
-                        Color? pendingTextColor;
-
-                        if (monitor.status == 'accepted') {
-                          statusText = 'Connected';
-                          statusBgColor = AppColors.greenOpca;
-                          statusTextColor = AppColors.greenOp;
-                        } else if (monitor.status == 'pending' &&
-                            monitor.isOutgoing) {
-                          pendingText = 'Pending';
-                          pendingBgColor = AppColors.yellow;
-                          pendingTextColor = AppColors.yellow2;
-                        } else if (monitor.status == 'pending' &&
-                            !monitor.isOutgoing) {
-                          pendingText = 'Decline';
-                          pendingBgColor = AppColors.redOpacity;
-                          pendingTextColor = AppColors.textRed;
-                          statusText = 'Accept';
-                          statusBgColor = AppColors.greenOpca;
-                          statusTextColor = AppColors.greenOp;
-                        } else if (monitor.status == 'rejected') {
-                          pendingText = 'Declined';
-                          pendingBgColor = AppColors.redOpacity;
-                          pendingTextColor = AppColors.textRed;
-                        }
-
-                        return Column(
-                          children: [
-                            RequestCard(
-                              title: monitor.fullName,
-                              subtitle: monitor.email,
-                              status: statusText.isNotEmpty ? statusText : null,
-                              color: statusBgColor,
-                              textColor: statusTextColor,
-                              panding: pendingText,
-                              declineColor: pendingBgColor,
-                              textColors: pendingTextColor,
-                            ),
-                            AppSpacing.h14,
-                          ],
-                        );
-                      }).toList(),
+                      ...provider.monitorsList
+                          .where(
+                            (monitor) =>
+                                monitor.status == 'accepted' ||
+                                monitor.status == 'connected' ||
+                                monitor.status == 'pending',
+                          )
+                          .map((monitor) {
+                            return Column(
+                              children: [
+                                RequestCard(
+                                  title: monitor.fullName,
+                                  subtitle: monitor.email,
+                                  requestId: monitor.requestId,
+                                  status:
+                                      monitor.status == 'accepted' ||
+                                          monitor.status == 'connected'
+                                      ? 'Connected'
+                                      : 'Pending',
+                                  color:
+                                      monitor.status == 'accepted' ||
+                                          monitor.status == 'connected'
+                                      ? AppColors.greenOpca
+                                      : AppColors.yellow,
+                                  textColor:
+                                      monitor.status == 'accepted' ||
+                                          monitor.status == 'connected'
+                                      ? AppColors.greenOp
+                                      : AppColors.yellow2,
+                                ),
+                                AppSpacing.h14,
+                              ],
+                            );
+                          })
+                          .toList(),
                   ],
                 ),
               ),

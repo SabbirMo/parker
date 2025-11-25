@@ -71,11 +71,13 @@ class _HomeMonitorState extends State<HomeMonitor> {
                       cricleIcon: 'assets/images/woman.png',
                       name: 'Maratha Johnson',
                       alertIcon: 'assets/icons/alert.png',
+                      age: '29',
                     ),
                     AppSpacing.h10,
                     PatientCard(
                       cricleIcon: 'assets/images/oldMan.png',
                       name: 'Peter Johnson',
+                      age: '65',
                       isSelected: false,
                     ),
                   ],
@@ -94,14 +96,24 @@ class PatientCard extends StatelessWidget {
     super.key,
     required this.cricleIcon,
     required this.name,
+    required this.age,
     this.alertIcon,
     this.isSelected = true,
+    this.completed = 0,
+    this.total = 0,
+    this.missedMedicines = const [],
+    this.lastTakenTime,
   });
 
   final String cricleIcon;
   final String name;
   final String? alertIcon;
+  final String age;
   final bool isSelected;
+  final int completed;
+  final int total;
+  final List<String> missedMedicines;
+  final String? lastTakenTime;
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +145,7 @@ class PatientCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '72 years old',
+                    '$age years old',
                     style: FontManager.subtitle.copyWith(
                       color: Color(0xff626262),
                       fontSize: 14.sp,
@@ -151,7 +163,7 @@ class PatientCard extends StatelessWidget {
             style: FontManager.loginStyle.copyWith(color: Color(0xff303030)),
           ),
           AppSpacing.h12,
-          ProgressBarWidget(),
+          ProgressBarWidget(completed: completed, total: total),
           AppSpacing.h12,
           isSelected
               ? Row(
@@ -166,9 +178,10 @@ class PatientCard extends StatelessWidget {
                       text: TextSpan(
                         children: [
                           TextSpan(text: 'Missed', style: FontManager.bodyText),
-
                           TextSpan(
-                            text: ' Omeprazole',
+                            text: missedMedicines.isNotEmpty
+                                ? ' ${missedMedicines.join(", ")}'
+                                : ' medicine',
                             style: FontManager.bodyText2,
                           ),
                         ],
@@ -186,7 +199,9 @@ class PatientCard extends StatelessWidget {
                     ),
                     AppSpacing.w10,
                     Text(
-                      'Last taken medicine at 12.01 PM',
+                      lastTakenTime != null
+                          ? 'Last taken medicine at $lastTakenTime'
+                          : 'No medicine taken today',
                       style: FontManager.bodyText.copyWith(
                         color: AppColors.green,
                       ),

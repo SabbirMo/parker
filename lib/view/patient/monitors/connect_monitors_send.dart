@@ -7,6 +7,7 @@ import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/back_button.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/core/widget/snack_bar.dart';
+import 'package:parker_touch/provider/patient_provider/connect_monitor_provider/connect_monitor_provider.dart';
 import 'package:parker_touch/provider/patient_provider/connect_monitor_provider/send_request_monitor_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -97,7 +98,14 @@ class ConnectMonitorsSend extends StatelessWidget {
                           context,
                           'Request sent successfully',
                         );
-                        Navigator.pop(context);
+                        // Refresh the monitors list before going back
+                        final connectProvider =
+                            Provider.of<ConnectMonitorProvider>(
+                              context,
+                              listen: false,
+                            );
+                        await connectProvider.fetchPatientMonitors();
+                        Navigator.pop(context, true);
                       } else {
                         CustomSnackBar.showError(
                           context,

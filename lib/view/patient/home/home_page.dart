@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:parker_touch/core/constants/app_colors.dart';
 import 'package:parker_touch/core/constants/app_spacing.dart';
-import 'package:parker_touch/core/constants/app_string.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
+import 'package:parker_touch/core/time/time_get_greeting.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/core/widget/free_trial_container.dart';
 import 'package:parker_touch/core/widget/header_section.dart';
@@ -52,19 +52,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  String getGreeting() {
-    final hour = DateTime.now().hour;
-    if (hour >= 5 && hour < 12) {
-      return AppString.goodMorning;
-    } else if (hour >= 12 && hour < 17) {
-      return "Good Afternoon";
-    } else if (hour >= 17 && hour < 21) {
-      return "Good Evening";
-    } else {
-      return "Good Night";
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final medicineProvider = Provider.of<MedicineListProvider>(context);
@@ -75,7 +62,7 @@ class _HomePageState extends State<HomePage> {
         Consumer(
           builder: (context, LoginProvider loginProvider, Widget? child) =>
               HeaderSection(
-                title: getGreeting(),
+                title: TimeGetGreeting.getGreeting(),
                 subtitle: loginProvider.fullName != null
                     ? loginProvider.fullName!
                     : "Mr. Parker",

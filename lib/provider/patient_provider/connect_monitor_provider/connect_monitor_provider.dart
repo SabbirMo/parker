@@ -97,6 +97,7 @@ class ConnectMonitorProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        debugPrint('API Response: ${response.body}');
         final monitorsData = data['monitors'] as List;
 
         // Parse and store monitors list
@@ -107,6 +108,9 @@ class ConnectMonitorProvider extends ChangeNotifier {
         debugPrint(
           'Patient monitors fetched successfully: ${monitorsList.length} monitors',
         );
+        for (var monitor in monitorsList) {
+          debugPrint('Monitor: ${monitor.fullName}, Status: ${monitor.status}');
+        }
         notifyListeners();
         return true;
       } else {

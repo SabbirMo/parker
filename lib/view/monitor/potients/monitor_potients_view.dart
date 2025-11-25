@@ -4,10 +4,13 @@ import 'package:parker_touch/core/constants/app_colors.dart';
 import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/app_string.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
+import 'package:parker_touch/core/time/time_get_greeting.dart';
 import 'package:parker_touch/core/widget/header_section.dart';
+import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
 import 'package:parker_touch/view/monitor/connect_potient/connect_potient.dart';
 import 'package:parker_touch/view/monitor/potients/all_patients.dart';
 import 'package:parker_touch/view/monitor/potients/request.dart';
+import 'package:provider/provider.dart';
 
 class MonitorPotientsView extends StatefulWidget {
   const MonitorPotientsView({super.key});
@@ -36,11 +39,17 @@ class _MonitorPotientsViewState extends State<MonitorPotientsView>
     return Scaffold(
       body: Column(
         children: [
-          HeaderSection(
-            title: AppString.goodMorning,
-            subtitle: AppString.enolaParker,
-            text: AppString.monitoringPatient,
+          Consumer(
+            builder: (context, LoginProvider loginProvider, Widget? child) =>
+                HeaderSection(
+                  title: TimeGetGreeting.getGreeting(),
+                  subtitle: loginProvider.fullName != null
+                      ? loginProvider.fullName!
+                      : AppString.enolaParker,
+                  text: AppString.monitoringPatient,
+                ),
           ),
+
           AppSpacing.h12,
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),

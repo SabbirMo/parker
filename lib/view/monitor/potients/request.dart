@@ -1,56 +1,98 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:parker_touch/core/constants/app_colors.dart';
-import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
+import 'package:parker_touch/provider/monitor_provider.dart/post_method/patients_list_provider.dart';
+import 'package:provider/provider.dart';
 
-class Request extends StatelessWidget {
+class Request extends StatefulWidget {
   const Request({super.key});
 
   @override
+  State<Request> createState() => _RequestState();
+}
+
+class _RequestState extends State<Request> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<PatientsListProvider>(
+        context,
+        listen: false,
+      ).fetchPatientsList();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final patientsListProvider = Provider.of<PatientsListProvider>(context);
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Column(
-            children: [
-              RequestCard(
-                title: "Peter Johnson",
-                subtitle: "sarah@gmail.com",
-                status: 'Connected',
+      body: patientsListProvider.isLoading
+          ? Center(child: CircularProgressIndicator())
+          : patientsListProvider.errorMessage != null
+          ? Center(child: Text(patientsListProvider.errorMessage!))
+          : patientsListProvider.patients.isEmpty
+          ? Center(child: Text('No patients found'))
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 16.0,
+                ),
+                child: Column(
+                  children: patientsListProvider.patients.map((patient) {
+                    Color? statusColor;
+                    Color? textColor;
+
+                    if (patient.status.toLowerCase() == 'accepted' ||
+                        patient.status.toLowerCase() == 'connected') {
+                      statusColor = AppColors.greenOpca;
+                      textColor = AppColors.greenOp;
+                    } else if (patient.status.toLowerCase() == 'pending') {
+                      statusColor = AppColors.yellow;
+                      textColor = AppColors.yellow2;
+                    } else if (patient.status.toLowerCase() == 'declined') {
+                      statusColor = AppColors.redOpacity;
+                      textColor = AppColors.textRed;
+                    }
+
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: 14.h),
+                      child: RequestCard(
+                        title: patient.fullName,
+                        subtitle: patient.email,
+                        status: patient.status,
+                        color: statusColor,
+                        textColor: textColor,
+                        requestId: patient.requestId,
+                        onAccept: patient.status.toLowerCase() == 'pending'
+                            ? () async {
+                                await patientsListProvider.respondToRequest(
+                                  patient.requestId,
+                                  'accept',
+                                );
+                              }
+                            : null,
+                        onDecline: patient.status.toLowerCase() == 'pending'
+                            ? () async {
+                                await patientsListProvider.respondToRequest(
+                                  patient.requestId,
+                                  'decline',
+                                );
+                              }
+                            : null,
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
-              AppSpacing.h14,
-              RequestCard(
-                title: "Maratha Johnson",
-                subtitle: "sarah@gmail.com",
-                status: 'Connected',
-              ),
-              AppSpacing.h14,
-              RequestCard(
-                title: "John parker",
-                subtitle: "sarah@gmail.com",
-                panding: 'Pending',
-              ),
-              AppSpacing.h14,
-              RequestCard(
-                title: "John parker",
-                subtitle: "sarah@gmail.com",
-                panding: "Decline",
-                textColors: AppColors.textRed,
-                textColor: AppColors.black1,
-                declineColor: AppColors.redOpacity,
-                status: "Accept",
-              ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }
 
-class RequestCard extends StatelessWidget {
+class RequestCard extends StatefulWidget {
   const RequestCard({
     super.key,
     required this.title,
@@ -58,10 +100,9 @@ class RequestCard extends StatelessWidget {
     this.status,
     this.color,
     this.textColor,
-    this.isSelected = false,
-    this.panding,
-    this.declineColor,
-    this.textColors,
+    required this.requestId,
+    this.onAccept,
+    this.onDecline,
   });
 
   final String title;
@@ -69,10 +110,17 @@ class RequestCard extends StatelessWidget {
   final String? status;
   final Color? color;
   final Color? textColor;
-  final bool isSelected;
-  final String? panding;
-  final Color? declineColor;
-  final Color? textColors;
+  final int requestId;
+  final VoidCallback? onAccept;
+  final VoidCallback? onDecline;
+
+  @override
+  State<RequestCard> createState() => _RequestCardState();
+}
+
+class _RequestCardState extends State<RequestCard> {
+  bool isAccepting = false;
+  bool isDeclining = false;
 
   @override
   Widget build(BuildContext context) {
@@ -86,56 +134,118 @@ class RequestCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title,
+            widget.title,
             style: FontManager.loginStyle.copyWith(color: AppColors.black1),
           ),
+          Text(
+            widget.subtitle,
+            style: FontManager.subtitle.copyWith(
+              color: AppColors.black1,
+              fontSize: 12.sp,
+            ),
+          ),
+          SizedBox(height: 8.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              if (status != null)
-                Container(
-                  width: 100.w,
-                  padding: EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: color ?? AppColors.greenOpca,
-                    borderRadius: BorderRadius.circular(18.r),
-                  ),
-                  child: Center(
-                    child: Text(
-                      status ?? '',
-                      style: FontManager.bodyText.copyWith(
-                        color: textColor ?? AppColors.greenOp,
-                      ),
+              if (widget.onAccept != null && widget.onDecline != null) ...[
+                GestureDetector(
+                  onTap: isDeclining || isAccepting
+                      ? null
+                      : () async {
+                          setState(() => isDeclining = true);
+                          widget.onDecline?.call();
+                          await Future.delayed(Duration(milliseconds: 500));
+                          if (mounted) setState(() => isDeclining = false);
+                        },
+                  child: Container(
+                    width: 100.w,
+                    padding: EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: AppColors.redOpacity,
+                      borderRadius: BorderRadius.circular(18.r),
+                    ),
+                    child: Center(
+                      child: isDeclining
+                          ? SizedBox(
+                              width: 16.w,
+                              height: 16.h,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.textRed,
+                              ),
+                            )
+                          : Text(
+                              'Decline',
+                              style: FontManager.bodyText.copyWith(
+                                color: AppColors.textRed,
+                              ),
+                            ),
                     ),
                   ),
                 ),
-
-              AppSpacing.w10,
-              if (panding != null)
+                SizedBox(width: 10.w),
+                GestureDetector(
+                  onTap: isAccepting || isDeclining
+                      ? null
+                      : () async {
+                          setState(() => isAccepting = true);
+                          widget.onAccept?.call();
+                          await Future.delayed(Duration(milliseconds: 500));
+                          if (mounted) setState(() => isAccepting = false);
+                        },
+                  child: Container(
+                    width: 100.w,
+                    padding: EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: AppColors.greenOpca,
+                      borderRadius: BorderRadius.circular(18.r),
+                    ),
+                    child: Center(
+                      child: isAccepting
+                          ? SizedBox(
+                              width: 16.w,
+                              height: 16.h,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: AppColors.greenOp,
+                              ),
+                            )
+                          : Text(
+                              'Accept',
+                              style: FontManager.bodyText.copyWith(
+                                color: AppColors.greenOp,
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+              ] else if (widget.status != null)
                 Container(
                   width: 100.w,
                   padding: EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: declineColor ?? AppColors.yellow,
+                    color: widget.color ?? AppColors.redOpacity,
                     borderRadius: BorderRadius.circular(18.r),
                   ),
                   child: Center(
                     child: Text(
-                      panding ?? '',
+                      widget.status?.toLowerCase() == 'accepted' ||
+                              widget.status?.toLowerCase() == 'connected'
+                          ? 'Connected'
+                          : widget.status?.toLowerCase() == 'pending'
+                          ? 'Pending'
+                          : widget.status?.toLowerCase() == 'rejected' ||
+                                widget.status?.toLowerCase() == 'declined'
+                          ? 'Declined'
+                          : widget.status ?? '',
                       style: FontManager.bodyText.copyWith(
-                        color: textColors ?? AppColors.yellow2,
+                        color: widget.textColor ?? AppColors.textRed,
                       ),
                     ),
                   ),
                 ),
             ],
-          ),
-          Text(
-            subtitle,
-            style: FontManager.subtitle.copyWith(
-              color: AppColors.black1,
-              fontSize: 12.sp,
-            ),
           ),
         ],
       ),

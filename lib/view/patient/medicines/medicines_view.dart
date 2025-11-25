@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:parker_touch/core/constants/app_colors.dart';
 import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
+import 'package:parker_touch/core/time/time_get_greeting.dart';
 import 'package:parker_touch/core/widget/header_section.dart';
 import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
 import 'package:parker_touch/provider/patient_provider/medicine_list_provider.dart';
@@ -45,11 +46,16 @@ class _MedicinesViewState extends State<MedicinesView> {
     return Scaffold(
       body: Column(
         children: [
-          HeaderSection(
-            title: "Good Morning",
-            subtitle: "Mr. Parker",
-            text: "Stay on track with your medications",
-            image: "assets/images/man.png",
+          Consumer(
+            builder: (context, LoginProvider loginProvider, Widget? child) =>
+                HeaderSection(
+                  title: TimeGetGreeting.getGreeting(),
+                  subtitle: loginProvider.fullName != null
+                      ? loginProvider.fullName!
+                      : "Mr. Parker",
+                  text: "Stay on track with your medications",
+                  image: "assets/images/man.png",
+                ),
           ),
           AppSpacing.h14,
           Padding(
