@@ -121,8 +121,7 @@ class _ShowDialogWidgetState extends State<ShowDialogWidget> {
             AppSpacing.h10,
             Consumer<LoginProvider>(
               builder: (context, loginProvider, _) {
-                final userName =
-                    loginProvider.fullName?.split(' ').first ?? 'Parker';
+                final userName = loginProvider.fullName ?? 'Parker';
                 return Container(
                   padding: EdgeInsets.all(8.r),
                   decoration: BoxDecoration(
