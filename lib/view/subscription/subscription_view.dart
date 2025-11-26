@@ -5,7 +5,10 @@ import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/back_button.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
-import 'package:parker_touch/view/subscription/cancel_subscription.dart';
+import 'package:parker_touch/core/widget/snack_bar.dart';
+import 'package:parker_touch/provider/subscription_provider/subscription_status_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SubscriptionView extends StatefulWidget {
   const SubscriptionView({super.key});
@@ -19,6 +22,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<SubscriptionStatusProvider>(context);
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -27,7 +31,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
           children: [
             SizedBox(height: MediaQuery.of(context).size.height * 0.05),
             CustomBackButton(),
-            AppSpacing.h12,
+            AppSpacing.h16,
             Text('Get', style: FontManager.bodyText8),
             Text(
               'Premium',
@@ -59,7 +63,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
             ),
             AppSpacing.h18,
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 GestureDetector(
                   onTap: () {
@@ -70,11 +74,12 @@ class _SubscriptionViewState extends State<SubscriptionView> {
                   child: PriceCard(
                     duration: '1',
                     durationUnit: 'month',
-                    originalPrice: '\$199.00',
-                    discountedPrice: '\$129.00',
+                    originalPrice: '\$10.00',
+                    discountedPrice: '\$9.00',
                     isSelected: _selectedCardIndex == 0,
                   ),
                 ),
+
                 GestureDetector(
                   onTap: () {
                     setState(() {
@@ -82,26 +87,12 @@ class _SubscriptionViewState extends State<SubscriptionView> {
                     });
                   },
                   child: PriceCard(
-                    duration: '6',
-                    durationUnit: 'month',
-                    originalPrice: '\$299.00',
-                    discountedPrice: '\$229.00',
-                    isSelected: _selectedCardIndex == 1,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedCardIndex = 2;
-                    });
-                  },
-                  child: PriceCard(
                     duration: '12',
                     durationUnit: 'month',
-                    originalPrice: '\$399.00',
-                    discountedPrice: '\$329.00',
+                    originalPrice: '\$108.00',
+                    discountedPrice: '\$79.00',
                     isPopular: true,
-                    isSelected: _selectedCardIndex == 2,
+                    isSelected: _selectedCardIndex == 1,
                   ),
                 ),
               ],
@@ -123,15 +114,60 @@ class _SubscriptionViewState extends State<SubscriptionView> {
               ),
             ),
             AppSpacing.h22,
-            CustomButton(
-              text: "Buy Now",
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CancelSubscription()),
-                );
-              },
-            ),
+            provider.isLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: AppColors.primaryColor,
+                    ),
+                  )
+                : CustomButton(
+                    text: "Buy Now",
+                    onTap: () async {
+                      final provider = Provider.of<SubscriptionStatusProvider>(
+                        context,
+                        listen: false,
+                      );
+
+                      // Determine plan type based on selected card
+                      String planType = _selectedCardIndex == 0
+                          ? 'monthly'
+                          : 'yearly';
+
+                      // Create checkout session
+                      final checkoutUrl = await provider.createCheckout(
+                        planType,
+                      );
+
+                      if (checkoutUrl != null) {
+                        try {
+                          // Open Stripe checkout URL
+                          final uri = Uri.parse(checkoutUrl);
+                          await launchUrl(
+                            uri,
+                            mode: LaunchMode.externalApplication,
+                          );
+                        } catch (e) {
+                          // Show error if URL can't be opened
+                          debugPrint('Error launching URL: $e');
+                          if (context.mounted) {
+                            CustomSnackBar.showSuccess(
+                              context,
+                              'Unable to open checkout page',
+                            );
+                          }
+                        }
+                      } else {
+                        // Show error if checkout creation failed
+                        if (context.mounted) {
+                          CustomSnackBar.showSuccess(
+                            context,
+                            provider.errorMessage ??
+                                'Failed to create checkout',
+                          );
+                        }
+                      }
+                    },
+                  ),
           ],
         ),
       ),
@@ -142,7 +178,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
 class PriceCard extends StatelessWidget {
   final String duration;
   final String durationUnit;
-  final String originalPrice;
+  final String? originalPrice;
   final String discountedPrice;
   final bool isPopular;
   final bool isSelected;
@@ -151,7 +187,7 @@ class PriceCard extends StatelessWidget {
     super.key,
     required this.duration,
     required this.durationUnit,
-    required this.originalPrice,
+    this.originalPrice,
     required this.discountedPrice,
     this.isPopular = false,
     this.isSelected = false,
@@ -191,13 +227,14 @@ class PriceCard extends StatelessWidget {
               Text(duration, style: FontManager.bodyText9),
               Text(durationUnit, style: FontManager.bodyText9),
               const SizedBox(height: 12),
-              Text(
-                originalPrice,
-                style: FontManager.bodyText5.copyWith(
-                  decoration: TextDecoration.lineThrough,
-                  color: Color(0xff787878),
+              if (originalPrice != null)
+                Text(
+                  originalPrice!,
+                  style: FontManager.bodyText5.copyWith(
+                    decoration: TextDecoration.lineThrough,
+                    color: Color(0xff787878),
+                  ),
                 ),
-              ),
               Text(
                 discountedPrice,
                 style: FontManager.bodyText5.copyWith(color: AppColors.black1),

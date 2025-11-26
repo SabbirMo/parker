@@ -1,7 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:parker_touch/core/constants/app_colors.dart';
+import 'package:parker_touch/core/services/firebase_notification_service.dart';
 import 'package:parker_touch/provider/auth/change_password/change_password_provider.dart';
 import 'package:parker_touch/provider/auth/change_password/new_password_provider.dart';
 import 'package:parker_touch/provider/auth/forgot_provider/forgot_password_provider.dart';
@@ -13,17 +16,45 @@ import 'package:parker_touch/provider/auth/upload_prescription/upload_prescritio
 import 'package:parker_touch/provider/home_provider/home_provider.dart';
 import 'package:parker_touch/provider/monitor_provider.dart/post_method/patient_connect_provider.dart';
 import 'package:parker_touch/provider/monitor_provider.dart/post_method/patients_list_provider.dart';
+import 'package:parker_touch/provider/notification_provider/notification_model.dart';
+import 'package:parker_touch/provider/notification_provider/toggle_notification.dart';
 import 'package:parker_touch/provider/patient_provider/add_medicine_manually_provider.dart';
 import 'package:parker_touch/provider/patient_provider/connect_monitor_provider/connect_monitor_provider.dart';
 import 'package:parker_touch/provider/patient_provider/connect_monitor_provider/send_request_monitor_provider.dart';
 import 'package:parker_touch/provider/patient_provider/medicine_list_provider.dart';
+import 'package:parker_touch/provider/subscription_provider/subscription_status_provider.dart';
+import 'package:parker_touch/provider/voice_reminder/voice_reminder_provider.dart';
 import 'package:parker_touch/view/splash/splash_view.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   final loginProvider = LoginProvider();
   await loginProvider.initialize();
+
+  final notificationProvider = NotificationProvider();
+  final toggleNotification = ToggleNotification();
+  await toggleNotification.initialize();
+
+  final firebaseNotificationService = FirebaseNotificationService();
+
+  // Initialize Firebase Messaging
+  await firebaseNotificationService.initialize();
+
+  // Set up notification callbacks
+  firebaseNotificationService.onMessageReceived = (message) {
+    notificationProvider.addNotificationFromRemoteMessage(message);
+  };
+
+  firebaseNotificationService.onMessageOpenedApp = (message) {
+    notificationProvider.addNotificationFromRemoteMessage(message);
+  };
+
+  FirebaseMessaging.instance.getToken().then((token) {
+    debugPrint('Firebase Messaging Token: $token');
+  });
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -47,6 +78,10 @@ void main() async {
           ChangeNotifierProvider(create: (_) => SaveScanPrescriptionProvider()),
           ChangeNotifierProvider(create: (_) => PatientsListProvider()),
           ChangeNotifierProvider(create: (_) => PatientConnectProvider()),
+          ChangeNotifierProvider(create: (_) => VoiceReminderProvider()),
+          ChangeNotifierProvider.value(value: notificationProvider),
+          ChangeNotifierProvider(create: (_) => SubscriptionStatusProvider()),
+          ChangeNotifierProvider.value(value: toggleNotification),
         ],
         child: const MyApp(),
       ),

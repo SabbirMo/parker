@@ -3,8 +3,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:parker_touch/core/base_url/base_url.dart';
+import 'package:parker_touch/core/services/fcm_token_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class LoginProvider extends ChangeNotifier {
   // Password toggle for UI
@@ -60,6 +62,17 @@ class LoginProvider extends ChangeNotifier {
         await prefs.setString('fullName', fullName!);
         if (profilePicture != null) {
           await prefs.setString('profilePicture', profilePicture!);
+        }
+
+        // Send FCM token to backend after successful login
+        try {
+          final fcmToken = await FirebaseMessaging.instance.getToken();
+          if (fcmToken != null) {
+            await FcmTokenService.sendTokenToBackend(fcmToken);
+            debugPrint('FCM token sent to backend after login');
+          }
+        } catch (e) {
+          debugPrint('Error sending FCM token after login: $e');
         }
 
         notifyListeners();
@@ -229,6 +242,14 @@ class LoginProvider extends ChangeNotifier {
 
   // -------------------- LOGOUT --------------------
   Future<void> logout() async {
+    // Delete FCM token from backend before logout
+    try {
+      await FcmTokenService.deleteTokenFromBackend();
+      debugPrint('FCM token deleted from backend');
+    } catch (e) {
+      debugPrint('Error deleting FCM token: $e');
+    }
+
     accessToken = null;
     refreshToken = null;
     role = null;

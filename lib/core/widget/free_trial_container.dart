@@ -4,7 +4,9 @@ import 'package:parker_touch/core/constants/app_colors.dart';
 import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/core/widget/text_cart.dart';
+import 'package:parker_touch/provider/subscription_provider/subscription_status_provider.dart';
 import 'package:parker_touch/view/subscription/subscription_view.dart';
+import 'package:provider/provider.dart';
 
 class FreeTrialContainer extends StatefulWidget {
   const FreeTrialContainer({super.key});
@@ -15,7 +17,20 @@ class FreeTrialContainer extends StatefulWidget {
 
 class _FreeTrialContainerState extends State<FreeTrialContainer> {
   @override
+  void initState() {
+    super.initState();
+    // Fetch subscription status when widget loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<SubscriptionStatusProvider>(
+        context,
+        listen: false,
+      ).getSubscriptionStatus();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<SubscriptionStatusProvider>(context);
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -37,13 +52,27 @@ class _FreeTrialContainerState extends State<FreeTrialContainer> {
             ],
           ),
           AppSpacing.h10,
+
+          // Show trial info only if trial days are remaining
+          if (provider.isTrialing && provider.trialDaysLeft > 0) ...[
+            Text(
+              'Your Free Trial Ends in ${provider.trialDaysLeft} days',
+              style: TextStyle(
+                color: Color(0xff0067D8),
+                fontSize: 20.sp,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            AppSpacing.h10,
+          ],
+
           CustomButton(
-            text: "START FREE TRIAL",
-            bgColor: AppColors.optBlue,
+            text: 'MANAGE SUBSCRIPTION',
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const SubscriptionView()),
+                MaterialPageRoute(builder: (_) => SubscriptionView()),
               );
             },
           ),

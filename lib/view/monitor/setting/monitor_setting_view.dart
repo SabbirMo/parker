@@ -5,6 +5,7 @@ import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
+import 'package:parker_touch/provider/notification_provider/toggle_notification.dart';
 import 'package:parker_touch/view/choose%20user/choose_user.dart';
 import 'package:parker_touch/view/monitor/edit_profile/edit_profile.dart';
 import 'package:parker_touch/view/monitor/privacy_setting/privacy_setting.dart';
@@ -162,11 +163,40 @@ class _MonitorSettingViewState extends State<MonitorSettingView> {
                       ],
                     ),
                     AppSpacing.h10,
-                    switchNotification(
-                      'Push notification',
-                      'Receive medication reminder',
-                      pushNotification,
-                      (value) => setState(() => pushNotification = value),
+                    Consumer<ToggleNotification>(
+                      builder: (context, toggle, child) => switchNotification(
+                        'Push notification',
+                        'Receive medication reminder',
+                        toggle.pushNotification,
+                        (value) async {
+                          // Show loading during API call
+                          final success = await toggle.togglePushNotification(
+                            value,
+                          );
+
+                          // Show feedback based on result
+                          if (!success && context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  toggle.errorMessage ??
+                                      'Failed to update notification preference',
+                                ),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          } else if (success && context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Notification preference updated successfully',
+                                ),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          }
+                        },
+                      ),
                     ),
                     AppSpacing.h6,
                     Divider(),

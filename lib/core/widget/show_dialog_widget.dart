@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:parker_touch/core/constants/app_colors.dart';
 import 'package:parker_touch/core/constants/app_spacing.dart';
@@ -10,6 +11,7 @@ import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/core/widget/snack_bar.dart';
 import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
 import 'package:parker_touch/provider/home_provider/home_provider.dart';
+import 'package:parker_touch/provider/voice_reminder/voice_reminder_provider.dart';
 import 'package:parker_touch/view/patient/home/model/patient_home_model.dart';
 import 'package:provider/provider.dart';
 
@@ -39,6 +41,37 @@ class _ShowDialogWidgetState extends State<ShowDialogWidget> {
         ),
       );
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+      final userName = loginProvider.fullName ?? 'Parker';
+      final medicineName = widget.nextMedicine?.name.toLowerCase() ?? 'aspirin';
+
+      final message =
+          'Hey $userName, It\'s time to take your medicine, $medicineName!';
+
+      speak(message);
+    });
+  }
+
+  final FlutterTts flutterTts = FlutterTts();
+
+  Future<void> speak(String text) async {
+    final voiceReminderProvider = Provider.of<VoiceReminderProvider>(
+      context,
+      listen: false,
+    );
+    if (!voiceReminderProvider.voiceReminder) return;
+
+    await flutterTts.setLanguage("en-US");
+    await flutterTts.setPitch(1.0);
+    await flutterTts.setSpeechRate(0.5);
+    await flutterTts.setVolume(1.0);
+    await flutterTts.speak(text);
   }
 
   @override
@@ -130,7 +163,7 @@ class _ShowDialogWidgetState extends State<ShowDialogWidget> {
                     borderRadius: BorderRadius.circular(13.r),
                   ),
                   child: Text(
-                    'Hey $userName, Its time to take your ${widget.nextMedicine?.name.toLowerCase() ?? 'aspirin'}!',
+                    'Hey $userName, It\'s time to take your medicine, ${widget.nextMedicine?.name.toLowerCase() ?? 'aspirin'}!',
                     style: FontManager.loginStyle.copyWith(
                       fontSize: 14.sp,
                       color: AppColors.black1,

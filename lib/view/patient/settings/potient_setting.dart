@@ -6,6 +6,7 @@ import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/custom_button.dart';
 import 'package:parker_touch/core/widget/free_trial_container.dart';
 import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
+import 'package:parker_touch/provider/voice_reminder/voice_reminder_provider.dart';
 import 'package:parker_touch/view/choose%20user/choose_user.dart';
 import 'package:parker_touch/view/monitor/edit_profile/edit_profile.dart';
 import 'package:parker_touch/view/monitor/privacy_setting/privacy_setting.dart';
@@ -25,6 +26,10 @@ class _PotientSettingState extends State<PotientSetting> {
   bool voiceNotification = true;
   @override
   Widget build(BuildContext context) {
+    final voiceReminder = Provider.of<VoiceReminderProvider>(
+      context,
+      listen: false,
+    );
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -166,8 +171,10 @@ class _PotientSettingState extends State<PotientSetting> {
                     switchNotification(
                       'Voice reminder',
                       'AI voice notification',
-                      voiceNotification,
-                      (value) => setState(() => voiceNotification = value),
+                      voiceReminder.voiceReminder,
+                      (value) => setState(
+                        () => voiceReminder.toggleVoiceReminder(value),
+                      ),
                     ),
                   ],
                 ),

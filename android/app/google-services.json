@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "838407689730",
+    "project_id": "parker-notification-527ff",
+    "storage_bucket": "parker-notification-527ff.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:838407689730:android:2002768840b4f3ce02f91b",
+        "android_client_info": {
+          "package_name": "com.example.parker_touch"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRqERt7vYVHozt0Bok_ub-tPZQCQTvV78"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
