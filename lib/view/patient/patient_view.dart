@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:parker_touch/core/widget/custom_bottom_navbar.dart';
 import 'package:parker_touch/view/patient/home/home_page.dart';
 import 'package:parker_touch/view/patient/medicines/medicines_view.dart';
@@ -41,11 +42,19 @@ class _PatientViewState extends State<PatientView> {
         contentWidget = const HomePage();
     }
 
-    return Scaffold(
-      body: contentWidget,
-      bottomNavigationBar: CustomBottomNavbar(
-        currentIndex: _currentIndex,
-        onTap: _onTabTapped,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (didPop) return;
+        // Exit the app when back button is pressed
+        SystemNavigator.pop();
+      },
+      child: Scaffold(
+        body: contentWidget,
+        bottomNavigationBar: CustomBottomNavbar(
+          currentIndex: _currentIndex,
+          onTap: _onTabTapped,
+        ),
       ),
     );
   }

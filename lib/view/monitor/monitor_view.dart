@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:parker_touch/core/widget/custom_bottom_navbar.dart';
 import 'package:parker_touch/view/monitor/home_monitor/home_monitor.dart';
 import 'package:parker_touch/view/monitor/notification/monitor_notification_view.dart';
@@ -41,12 +42,20 @@ class _MonitorViewState extends State<MonitorView> {
         contentWidget = const HomeMonitor();
     }
 
-    return Scaffold(
-      body: contentWidget,
-      bottomNavigationBar: CustomBottomNavbar(
-        currentIndex: _currentIndex,
-        onTap: _onTabTapped,
-        isMonitorView: true,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (didPop) return;
+        // Exit the app when back button is pressed
+        SystemNavigator.pop();
+      },
+      child: Scaffold(
+        body: contentWidget,
+        bottomNavigationBar: CustomBottomNavbar(
+          currentIndex: _currentIndex,
+          onTap: _onTabTapped,
+          isMonitorView: true,
+        ),
       ),
     );
   }

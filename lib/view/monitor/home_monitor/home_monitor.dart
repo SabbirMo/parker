@@ -7,6 +7,7 @@ import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/header_section.dart';
 import 'package:parker_touch/core/widget/progress_bar_widget.dart';
 import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
+import 'package:parker_touch/provider/monitor_provider.dart/post_method/patients_list_provider.dart';
 import 'package:parker_touch/view/monitor/connect_potient/medicine_potient.dart';
 import 'package:provider/provider.dart';
 
@@ -18,6 +19,17 @@ class HomeMonitor extends StatefulWidget {
 }
 
 class _HomeMonitorState extends State<HomeMonitor> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<PatientsListProvider>(
+        context,
+        listen: false,
+      ).fetchAllPatientsSummary();
+    });
+  }
+
   String getGreeting() {
     final hour = DateTime.now().hour;
     if (hour >= 5 && hour < 12) {
@@ -57,30 +69,75 @@ class _HomeMonitorState extends State<HomeMonitor> {
                   top: 8.0,
                   bottom: 30.0,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const AlertContainer(),
-                    AppSpacing.h18,
-                    Text(
-                      'Your patients (2)',
-                      style: FontManager.loginStyle.copyWith(fontSize: 18.sp),
-                    ),
-                    AppSpacing.h12,
-                    PatientCard(
-                      cricleIcon: 'assets/images/woman.png',
-                      name: 'Maratha Johnson',
-                      alertIcon: 'assets/icons/alert.png',
-                      age: '29',
-                    ),
-                    AppSpacing.h10,
-                    PatientCard(
-                      cricleIcon: 'assets/images/oldMan.png',
-                      name: 'Peter Johnson',
-                      age: '65',
-                      isSelected: false,
-                    ),
-                  ],
+                child: Consumer<PatientsListProvider>(
+                  builder: (context, patientsProvider, child) {
+                    if (patientsProvider.isSummaryLoading) {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.optBlue,
+                        ),
+                      );
+                    }
+
+                    if (patientsProvider.summaryErrorMessage != null) {
+                      return Center(
+                        child: Text(
+                          patientsProvider.summaryErrorMessage!,
+                          style: FontManager.bodyText,
+                        ),
+                      );
+                    }
+
+                    final patients = patientsProvider.connectedPatients;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (patients.any((p) => p.todayProgress.hasMissedDose))
+                          Column(
+                            children: [
+                              AlertContainer(
+                                patient: patients.firstWhere(
+                                  (p) => p.todayProgress.hasMissedDose,
+                                ),
+                              ),
+                              AppSpacing.h18,
+                            ],
+                          ),
+                        Text(
+                          'Your patients (${patients.length})',
+                          style: FontManager.loginStyle.copyWith(
+                            fontSize: 18.sp,
+                          ),
+                        ),
+                        AppSpacing.h12,
+                        ...patients.map((patient) {
+                          return Column(
+                            children: [
+                              PatientCard(
+                                cricleIcon:
+                                    patient.profilePhoto ??
+                                    'assets/images/woman.png',
+                                name: patient.fullName,
+                                alertIcon: patient.todayProgress.hasMissedDose
+                                    ? 'assets/icons/alert.png'
+                                    : null,
+                                age: '${patient.age}',
+                                isSelected: patient.todayProgress.hasMissedDose,
+                                completed: patient.todayProgress.taken,
+                                total: patient.todayProgress.total,
+                                missedMedicines:
+                                    patient.todayProgress.missedMedicines,
+                                lastTakenTime:
+                                    patient.todayProgress.lastTakenTime,
+                              ),
+                              AppSpacing.h10,
+                            ],
+                          );
+                        }).toList(),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
@@ -243,7 +300,9 @@ class PatientCard extends StatelessWidget {
 }
 
 class AlertContainer extends StatelessWidget {
-  const AlertContainer({super.key});
+  const AlertContainer({super.key, required this.patient});
+
+  final ConnectedPatient patient;
 
   @override
   Widget build(BuildContext context) {
@@ -270,19 +329,21 @@ class AlertContainer extends StatelessWidget {
             ],
           ),
           AppSpacing.h2,
-          Text('Maratha Johnson missed ', style: FontManager.loginStyle),
+          Text('${patient.fullName} missed ', style: FontManager.loginStyle),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "omeprazole 20mg",
+                patient.todayProgress.missedMedicines.isNotEmpty
+                    ? patient.todayProgress.missedMedicines.first
+                    : "medicine",
                 style: FontManager.loginStyle.copyWith(
                   color: Color(0xff4E4E4E),
                   fontSize: 14.sp,
                 ),
               ),
               Text(
-                "4 hours ago",
+                "Recent",
                 style: FontManager.subtitle.copyWith(
                   fontSize: 14.sp,
                   color: Color(0xff4E4E4E),

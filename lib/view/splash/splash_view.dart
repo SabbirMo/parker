@@ -9,7 +9,10 @@ import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/app_string.dart';
 import 'package:parker_touch/core/constants/assets_manager.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
+import 'package:parker_touch/view/monitor/monitor_view.dart';
 import 'package:parker_touch/view/onboarding/onboarding.dart';
+import 'package:parker_touch/view/patient/patient_view.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -35,11 +38,43 @@ class _SplashViewState extends State<SplashView> {
     });
 
     _navigationTimer = Timer(const Duration(seconds: 3), () {
+      _checkLoginStatus();
+    });
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('accessToken');
+    final role = prefs.getString('role');
+
+    if (!mounted) return;
+
+    if (token != null && token.isNotEmpty) {
+      // User is logged in, navigate to appropriate page based on role
+      if (role == 'patient') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const PatientView()),
+        );
+      } else if (role == 'monitor') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const MonitorView()),
+        );
+      } else {
+        // Unknown role, go to onboarding
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const OnboardingPage()),
+        );
+      }
+    } else {
+      // User is not logged in, go to onboarding
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const OnboardingPage()),
       );
-    });
+    }
   }
 
   @override
