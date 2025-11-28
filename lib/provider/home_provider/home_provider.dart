@@ -195,7 +195,16 @@ class HomeProvider extends ChangeNotifier {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
-        isMatchedMedicine = data['is_match'] ?? false;
+        isMatchedMedicine = data['match'] ?? false;
+
+        if (isMatchedMedicine == true && data['medicine'] != null) {
+          final medicine = data['medicine'];
+          final name = medicine['name'] ?? '';
+          final dosage = medicine['dosage'] ?? '';
+          final time = medicine['time'] ?? '';
+          debugPrint('Medicine Name: $name, Dosage: $dosage, Time: $time');
+        }
+
         debugPrint('Medicine match result: $isMatchedMedicine');
         notifyListeners();
         return isMatchedMedicine!;
