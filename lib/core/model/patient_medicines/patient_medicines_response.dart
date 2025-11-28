@@ -1,12 +1,14 @@
 class Patient {
   final int id;
   final String fullName;
+  final String email;
   final int age;
   final String profilePhoto;
 
   Patient({
     required this.id,
     required this.fullName,
+    required this.email,
     required this.age,
     required this.profilePhoto,
   });
@@ -14,6 +16,7 @@ class Patient {
   factory Patient.fromJson(Map<String, dynamic> json) => Patient(
     id: json['id'],
     fullName: json['full_name'] ?? '',
+    email: json['email'] ?? '',
     age: json['age'],
     profilePhoto: json['profile_photo'] ?? '',
   );
@@ -63,6 +66,7 @@ class TimeWithStatus {
 class Medicine {
   final int id;
   final String name;
+  final int totalDays;
   final String dosage;
   final List<String> times;
   final List<TimeWithStatus> timesWithStatus;
@@ -70,15 +74,17 @@ class Medicine {
   Medicine({
     required this.id,
     required this.name,
+    required this.totalDays,
     required this.dosage,
     required this.times,
     required this.timesWithStatus,
   });
 
   factory Medicine.fromJson(Map<String, dynamic> json) => Medicine(
-    id: json['id'],
-    name: json['name'],
-    dosage: json['dosage'],
+    id: json['id'] ?? 0,
+    name: json['name'] ?? '',
+    totalDays: json['total_days'] ?? 0,
+    dosage: json['dosage'] ?? '',
     times: List<String>.from(json['times'] ?? []),
     timesWithStatus: (json['times_with_status'] as List)
         .map((e) => TimeWithStatus.fromJson(e))

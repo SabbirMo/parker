@@ -80,7 +80,7 @@ class _MedicinePotientState extends State<MedicinePotient> {
             AppSpacing.h16,
             Align(
               child: Text(
-                widget.patientName ?? 'Sarah Benwestrith',
+                '${patient?.fullName}',
                 style: FontManager.contTitle,
                 textAlign: TextAlign.center,
               ),
@@ -89,6 +89,11 @@ class _MedicinePotientState extends State<MedicinePotient> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Text(
+                  '${patient?.email ?? ''}  |',
+                  style: FontManager.contSubTitle,
+                ),
+                AppSpacing.w8,
                 Text(
                   '${patient?.age ?? ''} years old',
                   style: FontManager.contSubTitle,
@@ -111,7 +116,7 @@ class _MedicinePotientState extends State<MedicinePotient> {
                           medicineName: med.name,
                           mg: med.dosage,
                           time: "${med.times.length} times",
-                          days: "N/A", // API gives no day count
+                          days: "${med.totalDays}",
                           times: med.times,
                           index: med.times.length,
                         ),
