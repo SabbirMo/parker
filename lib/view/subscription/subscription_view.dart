@@ -18,7 +18,22 @@ class SubscriptionView extends StatefulWidget {
 }
 
 class _SubscriptionViewState extends State<SubscriptionView> {
-  int _selectedCardIndex = 0; // First card selected by default
+  int? _selectedCardIndex; // Selected plan ID
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch plans when widget initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<SubscriptionStatusProvider>(
+        context,
+        listen: false,
+      );
+      if (!provider.plansLoaded) {
+        provider.fetchPlans();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,42 +77,59 @@ class _SubscriptionViewState extends State<SubscriptionView> {
               text: ' Let your loved ones track your progress in real time.',
             ),
             AppSpacing.h18,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedCardIndex = 0;
-                    });
-                  },
-                  child: PriceCard(
-                    duration: '1',
-                    durationUnit: 'month',
-                    originalPrice: '\$10.00',
-                    discountedPrice: '\$9.00',
-                    isSelected: _selectedCardIndex == 0,
+            provider.isLoading
+                ? SizedBox(
+                    height: 140.h,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
+                  )
+                : provider.plans.isEmpty
+                ? SizedBox(
+                    height: 140.h,
+                    child: Center(
+                      child: Text(
+                        'No plans available',
+                        style: FontManager.contSubTitle,
+                      ),
+                    ),
+                  )
+                : SizedBox(
+                    height: 140.h,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: provider.plans.length,
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      itemBuilder: (context, index) {
+                        final plan = provider.plans[index];
+                        final isPopular =
+                            index == 1; // Make second plan popular
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            right: index < provider.plans.length - 1 ? 16.w : 0,
+                          ),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedCardIndex = plan.id;
+                              });
+                            },
+                            child: PriceCard(
+                              planName: plan.name,
+                              duration: _getDuration(plan.interval),
+                              durationUnit: plan.intervalDisplay,
+                              price: '\$${plan.price.toStringAsFixed(2)}',
+                              features: plan.features,
+                              isPopular: isPopular,
+                              isSelected: _selectedCardIndex == plan.id,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
-
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedCardIndex = 1;
-                    });
-                  },
-                  child: PriceCard(
-                    duration: '12',
-                    durationUnit: 'month',
-                    originalPrice: '\$108.00',
-                    discountedPrice: '\$79.00',
-                    isPopular: true,
-                    isSelected: _selectedCardIndex == 1,
-                  ),
-                ),
-              ],
-            ),
-            AppSpacing.h22,
             Align(
               alignment: Alignment.center,
               child: Text(
@@ -128,15 +160,27 @@ class _SubscriptionViewState extends State<SubscriptionView> {
                         listen: false,
                       );
 
-                      // Determine plan type based on selected card
-                      String planType = _selectedCardIndex == 0
-                          ? 'monthly'
-                          : 'yearly';
+                      // Get plan_id from selected plan
+                      if (provider.plans.isEmpty) {
+                        CustomSnackBar.showSuccess(
+                          context,
+                          'No plans available',
+                        );
+                        return;
+                      }
+
+                      if (_selectedCardIndex == null) {
+                        CustomSnackBar.showSuccess(
+                          context,
+                          'Please select a plan',
+                        );
+                        return;
+                      }
+
+                      String planId = _selectedCardIndex.toString();
 
                       // Create checkout session
-                      final checkoutUrl = await provider.createCheckout(
-                        planType,
-                      );
+                      final checkoutUrl = await provider.createCheckout(planId);
 
                       if (checkoutUrl != null) {
                         try {
@@ -173,22 +217,39 @@ class _SubscriptionViewState extends State<SubscriptionView> {
       ),
     );
   }
+
+  String _getDuration(String interval) {
+    switch (interval.toLowerCase()) {
+      case 'day':
+        return '1';
+      case 'week':
+        return '1';
+      case 'month':
+        return '1';
+      case 'year':
+        return '12';
+      default:
+        return '1';
+    }
+  }
 }
 
 class PriceCard extends StatelessWidget {
+  final String planName;
   final String duration;
   final String durationUnit;
-  final String? originalPrice;
-  final String discountedPrice;
+  final String price;
+  final List<String> features;
   final bool isPopular;
   final bool isSelected;
 
   const PriceCard({
     super.key,
+    required this.planName,
     required this.duration,
     required this.durationUnit,
-    this.originalPrice,
-    required this.discountedPrice,
+    required this.price,
+    required this.features,
     this.isPopular = false,
     this.isSelected = false,
   });
@@ -199,6 +260,7 @@ class PriceCard extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         Container(
+          width: 160.w,
           padding: const EdgeInsets.only(
             left: 16,
             right: 16,
@@ -216,28 +278,38 @@ class PriceCard extends StatelessWidget {
                 ? [
                     BoxShadow(
                       color: Colors.blue.withValues(alpha: 0.3),
-                      blurRadius: 10,
+                      blurRadius: 8,
                       spreadRadius: 2,
                     ),
                   ]
                 : [],
           ),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(duration, style: FontManager.bodyText9),
-              Text(durationUnit, style: FontManager.bodyText9),
-              const SizedBox(height: 12),
-              if (originalPrice != null)
-                Text(
-                  originalPrice!,
-                  style: FontManager.bodyText5.copyWith(
-                    decoration: TextDecoration.lineThrough,
-                    color: Color(0xff787878),
-                  ),
-                ),
               Text(
-                discountedPrice,
-                style: FontManager.bodyText5.copyWith(color: AppColors.black1),
+                planName,
+                style: FontManager.bodyText5.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                price,
+                style: FontManager.bodyText5.copyWith(
+                  color: AppColors.black1,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.sp,
+                ),
+              ),
+              Text(
+                '/ $durationUnit',
+                style: FontManager.contSubTitle.copyWith(
+                  color: Color(0xff787878),
+                  fontSize: 12.sp,
+                ),
               ),
             ],
           ),

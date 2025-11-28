@@ -1,4 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:parker_touch/core/constants/app_colors.dart';
@@ -15,6 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
 import 'package:parker_touch/provider/home_provider/home_provider.dart';
 import 'package:parker_touch/provider/patient_provider/medicine_list_provider.dart';
+import 'package:parker_touch/core/base_url/base_url.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -36,16 +36,42 @@ class _HomePageState extends State<HomePage> {
       final homeProvider = Provider.of<HomeProvider>(context, listen: false);
 
       if (loginProvider.accessToken != null) {
+        debugPrint('=== HomePage API Calls ===');
+        debugPrint('Base URL: $baseUrl');
+        debugPrint(
+          'Access Token: ${loginProvider.accessToken?.substring(0, 20)}...',
+        );
+        debugPrint('Full Name: ${loginProvider.fullName}');
+        debugPrint('Role: ${loginProvider.role}');
+
         debugPrint('Calling getNextMedicine API from HomePage');
+        debugPrint('Endpoint: $baseUrl/api/medicine/home-summary/');
+
         medicineProvider.getNextMedicine(loginProvider.accessToken!).then((_) {
-          debugPrint(
-            'Next Medicine Data: ${medicineProvider.nextMedicine?.name}',
-          );
+          if (medicineProvider.nextMedicine != null) {
+            debugPrint(
+              'Next Medicine Data: ${medicineProvider.nextMedicine?.name}',
+            );
+          } else {
+            debugPrint('No next medicine found or API error');
+            if (medicineProvider.errorMessage != null) {
+              debugPrint('Error: ${medicineProvider.errorMessage}');
+            }
+          }
         });
 
         // Call today summary API
         debugPrint('Calling todaySummaryProgressBar API from HomePage');
-        homeProvider.todaySummaryProgressBar();
+        debugPrint('Endpoint: $baseUrl/api/medicine/today-summary/');
+
+        homeProvider.todaySummaryProgressBar().then((success) {
+          if (!success) {
+            debugPrint('Failed to load today summary');
+            if (homeProvider.errorMessage != null) {
+              debugPrint('Error: ${homeProvider.errorMessage}');
+            }
+          }
+        });
       } else {
         debugPrint('No access token available in HomePage');
       }
@@ -102,6 +128,38 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                             )
+                          : medicineProvider.errorMessage != null
+                          ? Container(
+                              padding: EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: AppColors.white,
+                                borderRadius: BorderRadius.circular(16.r),
+                                border: Border.all(width: 1, color: Colors.red),
+                              ),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.error_outline,
+                                    color: Colors.red,
+                                    size: 48,
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Unable to load medicine data',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'Please check your connection and try again',
+                                    style: TextStyle(fontSize: 12),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            )
                           : MedicineContainer(
                               nextMedicine: medicineProvider.nextMedicine,
                             ),
@@ -131,6 +189,17 @@ class _HomePageState extends State<HomePage> {
                                       padding: const EdgeInsets.all(8.0),
                                       child: CircularProgressIndicator(
                                         color: AppColors.primaryColor,
+                                      ),
+                                    ),
+                                  )
+                                : homeProvider.errorMessage != null
+                                ? Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      'Unable to load summary',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 12,
                                       ),
                                     ),
                                   )

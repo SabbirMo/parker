@@ -34,6 +34,18 @@ class MedicineListProvider extends ChangeNotifier {
       debugPrint('Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
+        // Check if response is HTML (error page)
+        if (response.body.trim().startsWith('<!DOCTYPE') ||
+            response.body.trim().startsWith('<html')) {
+          debugPrint('ERROR: Received HTML response instead of JSON');
+          debugPrint('API endpoint may not exist or returned error page');
+          errorMessage = 'API endpoint error';
+          medicines = [];
+          isLoading = false;
+          notifyListeners();
+          return;
+        }
+
         final data = jsonDecode(response.body);
         debugPrint('Decoded data: $data');
 
@@ -82,6 +94,7 @@ class MedicineListProvider extends ChangeNotifier {
   Future<void> getNextMedicine(String accessToken) async {
     try {
       isLoading = true;
+      errorMessage = null; // Reset error message
       notifyListeners();
 
       debugPrint(
@@ -104,6 +117,17 @@ class MedicineListProvider extends ChangeNotifier {
       notifyListeners();
 
       if (response.statusCode == 200) {
+        // Check if response is HTML (error page)
+        if (response.body.trim().startsWith('<!DOCTYPE') ||
+            response.body.trim().startsWith('<html')) {
+          debugPrint('ERROR: Received HTML response instead of JSON');
+          debugPrint('API endpoint may not exist or returned error page');
+          errorMessage = 'API endpoint error';
+          nextMedicine = null;
+          notifyListeners();
+          return;
+        }
+
         final data = jsonDecode(response.body);
         debugPrint('Decoded data: $data');
 

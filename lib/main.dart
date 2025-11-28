@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:parker_touch/core/constants/app_colors.dart';
 import 'package:parker_touch/core/services/firebase_notification_service.dart';
+import 'package:parker_touch/core/time/alarm/alarm_service.dart';
 import 'package:parker_touch/provider/auth/change_password/change_password_provider.dart';
 import 'package:parker_touch/provider/auth/change_password/new_password_provider.dart';
 import 'package:parker_touch/provider/auth/forgot_provider/forgot_password_provider.dart';
@@ -14,6 +15,7 @@ import 'package:parker_touch/provider/auth/signup_provider/patient_provider.dart
 import 'package:parker_touch/provider/auth/upload_prescription/save_scan_prescription_provider.dart';
 import 'package:parker_touch/provider/auth/upload_prescription/upload_prescrition_provider.dart';
 import 'package:parker_touch/provider/home_provider/home_provider.dart';
+import 'package:parker_touch/provider/monitor_provider.dart/patient_details/patient_details.dart';
 import 'package:parker_touch/provider/monitor_provider.dart/post_method/patient_connect_provider.dart';
 import 'package:parker_touch/provider/monitor_provider.dart/post_method/patients_list_provider.dart';
 import 'package:parker_touch/provider/notification_provider/notification_model.dart';
@@ -30,6 +32,7 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await AlarmService.init();
 
   final loginProvider = LoginProvider();
   await loginProvider.initialize();
@@ -82,6 +85,7 @@ void main() async {
           ChangeNotifierProvider.value(value: notificationProvider),
           ChangeNotifierProvider(create: (_) => SubscriptionStatusProvider()),
           ChangeNotifierProvider.value(value: toggleNotification),
+          ChangeNotifierProvider(create: (_) => PatientDetailsProvider()),
         ],
         child: const MyApp(),
       ),

@@ -4,91 +4,125 @@ import 'package:parker_touch/core/constants/app_colors.dart';
 import 'package:parker_touch/core/constants/app_spacing.dart';
 import 'package:parker_touch/core/constants/font_manager.dart';
 import 'package:parker_touch/core/widget/back_button.dart';
+import 'package:parker_touch/provider/monitor_provider.dart/patient_details/patient_details.dart';
+import 'package:provider/provider.dart';
 
-class MedicinePotient extends StatelessWidget {
-  const MedicinePotient({super.key, this.email});
-
+class MedicinePotient extends StatefulWidget {
+  const MedicinePotient({
+    super.key,
+    this.patientId,
+    this.patientName,
+    this.email,
+  });
+  final int? patientId;
+  final String? patientName;
   final String? email;
 
   @override
+  State<MedicinePotient> createState() => _MedicinePotientState();
+}
+
+class _MedicinePotientState extends State<MedicinePotient> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<PatientDetailsProvider>(
+        context,
+        listen: false,
+      );
+      provider.fetchPatientMedicines(widget.patientId ?? 1);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<PatientDetailsProvider>(context);
+
+    if (provider.isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.primaryColor),
+      );
+    }
+
+    if (provider.error != null) {
+      return Center(
+        child: Text(
+          provider.error ?? 'An error occurred',
+          style: FontManager.contTitle,
+        ),
+      );
+    }
+
+    final patient = provider.patientMedicines?.patient;
+    final medicines = provider.patientMedicines?.medicines;
+
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomBackButton(),
-              AppSpacing.h12,
-              Align(
-                alignment: Alignment.center,
-                child: CircleAvatar(
-                  radius: 54.r,
-                  backgroundImage: AssetImage('assets/images/womanFace.png'),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+            CustomBackButton(),
+            AppSpacing.h12,
+            Align(
+              alignment: Alignment.center,
+              child: CircleAvatar(
+                radius: 54.r,
+                backgroundImage:
+                    patient != null && patient.profilePhoto.isNotEmpty
+                    ? NetworkImage(patient.profilePhoto)
+                    : const AssetImage('assets/images/patient1.png')
+                          as ImageProvider,
+              ),
+            ),
+            AppSpacing.h16,
+            Align(
+              child: Text(
+                widget.patientName ?? 'Sarah Benwestrith',
+                style: FontManager.contTitle,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            AppSpacing.h4,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '${patient?.age ?? ''} years old',
+                  style: FontManager.contSubTitle,
+                ),
+              ],
+            ),
+            AppSpacing.h20,
+            Text('Patient’s Medicine', style: FontManager.connect),
+            AppSpacing.h8,
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: List.generate(medicines?.length ?? 0, (index) {
+                    final med = medicines![index];
+
+                    return Column(
+                      children: [
+                        MedicineCart(
+                          num: "${index + 1}.",
+                          medicineName: med.name,
+                          mg: med.dosage,
+                          time: "${med.times.length} times",
+                          days: "N/A", // API gives no day count
+                          times: med.times,
+                          index: med.times.length,
+                        ),
+                        AppSpacing.h14,
+                      ],
+                    );
+                  }),
                 ),
               ),
-              AppSpacing.h16,
-              Align(
-                child: Text(
-                  'Sarah benwestrith',
-                  style: FontManager.contTitle,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              AppSpacing.h4,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    email ?? 'sarah@gmail.com',
-                    style: FontManager.contSubTitle,
-                  ),
-                  Text(' | 72 years old', style: FontManager.contSubTitle),
-                ],
-              ),
-              AppSpacing.h20,
-              Text('Patient’s Medicine', style: FontManager.connect),
-              AppSpacing.h8,
-              const MedicineCart(
-                num: '1.',
-                medicineName: ' Paracetamol',
-                mg: '500mg',
-                time: '3 times',
-                days: '5 days',
-                index: 2,
-              ),
-              AppSpacing.h14,
-              const MedicineCart(
-                num: '2.',
-                medicineName: ' Omeprazole',
-                mg: '500mg',
-                time: '3 times',
-                days: '5 days',
-                index: 3,
-              ),
-              AppSpacing.h14,
-              const MedicineCart(
-                num: '3.',
-                medicineName: ' Cetirizine',
-                mg: '500mg',
-                time: '3 times',
-                days: '5 days',
-                color: AppColors.redOpa,
-                index: 1,
-              ),
-              AppSpacing.h14,
-              const MedicineCart(
-                num: '4.',
-                medicineName: ' Amoxicillin',
-                mg: '500mg',
-                time: '3 times',
-                days: '5 days',
-                color: AppColors.white,
-                index: 3,
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

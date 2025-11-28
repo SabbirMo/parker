@@ -24,7 +24,11 @@ class _FreeTrialContainerState extends State<FreeTrialContainer> {
       Provider.of<SubscriptionStatusProvider>(
         context,
         listen: false,
-      ).getSubscriptionStatus();
+      ).getSubscriptionStatus().catchError((error) {
+        // Silently handle subscription fetch errors
+        debugPrint('Subscription fetch failed, continuing with defaults');
+        return false;
+      });
     });
   }
 
@@ -53,14 +57,28 @@ class _FreeTrialContainerState extends State<FreeTrialContainer> {
           ),
           AppSpacing.h10,
 
-          // Show trial info only if trial days are remaining
-          if (provider.isTrialing && provider.trialDaysLeft > 0) ...[
+          // Show days left info
+          if (provider.daysLeft > 0) ...[
             Text(
-              'Your Free Trial Ends in ${provider.trialDaysLeft} days',
+              'Your Trial Ends in ${provider.daysLeft} days',
               style: TextStyle(
                 color: Color(0xff0067D8),
                 fontSize: 20.sp,
                 fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            AppSpacing.h10,
+          ],
+
+          // Show status if available
+          if (provider.status.isNotEmpty && provider.status != 'Unknown') ...[
+            Text(
+              'Status: ${provider.status}',
+              style: TextStyle(
+                color: Color(0xff0067D8),
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,
             ),

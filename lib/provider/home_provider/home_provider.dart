@@ -40,6 +40,15 @@ class HomeProvider extends ChangeNotifier {
       notifyListeners();
 
       if (response.statusCode == 200) {
+        // Check if response is HTML (error page)
+        if (response.body.trim().startsWith('<!DOCTYPE') ||
+            response.body.trim().startsWith('<html')) {
+          debugPrint('ERROR: Received HTML response instead of JSON');
+          debugPrint('API endpoint may not exist or returned error page');
+          errorMessage = 'API endpoint not found';
+          return false;
+        }
+
         final data = jsonDecode(response.body);
         final summary = data['today_summary'];
 

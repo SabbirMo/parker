@@ -45,6 +45,9 @@ class _HomeMonitorState extends State<HomeMonitor> {
 
   @override
   Widget build(BuildContext context) {
+    final patients = Provider.of<PatientsListProvider>(
+      context,
+    ).connectedPatients;
     return Scaffold(
       body: Column(
         children: [
@@ -55,7 +58,7 @@ class _HomeMonitorState extends State<HomeMonitor> {
                   subtitle: loginProvider.fullName != null
                       ? loginProvider.fullName!
                       : AppString.enolaParker,
-                  text: AppString.monitoringPatient,
+                  text: 'Monitoring ${patients.length} patients',
                 ),
           ),
 
@@ -130,6 +133,7 @@ class _HomeMonitorState extends State<HomeMonitor> {
                                     patient.todayProgress.missedMedicines,
                                 lastTakenTime:
                                     patient.todayProgress.lastTakenTime,
+                                patientId: patient.id,
                               ),
                               AppSpacing.h10,
                             ],
@@ -154,6 +158,7 @@ class PatientCard extends StatelessWidget {
     required this.cricleIcon,
     required this.name,
     required this.age,
+    required this.patientId,
     this.alertIcon,
     this.isSelected = true,
     this.completed = 0,
@@ -163,6 +168,7 @@ class PatientCard extends StatelessWidget {
   });
 
   final String cricleIcon;
+  final int patientId;
   final String name;
   final String? alertIcon;
   final String age;
@@ -272,7 +278,10 @@ class PatientCard extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => MedicinePotient()),
+                MaterialPageRoute(
+                  builder: (context) =>
+                      MedicinePotient(patientId: patientId, patientName: name),
+                ),
               );
             },
             child: Row(

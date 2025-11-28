@@ -47,6 +47,11 @@ dependencies:
   firebase_core: ^2.32.0
   firebase_messaging: ^14.0.5
   url_launcher: ^6.3.2
+  flutter_local_notifications: ^19.5.0
+  timezone: ^0.10.1
+  intl: ^0.20.2
+  alarm: ^5.1.5
+  android_alarm_manager_plus: ^5.0.0
 
 dev_dependencies:
   flutter_test:
@@ -76,6 +81,7 @@ flutter:
     - assets/svg/
     - assets/fonts/
     - assets/animations/
+    - assets/sounds/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

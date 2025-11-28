@@ -73,6 +73,8 @@ class _AllPatientsState extends State<AllPatients> {
                       missedMedicines: patient.todayProgress.missedMedicines,
                       lastTakenTime: patient.todayProgress.lastTakenTime,
                       isSelected: patient.todayProgress.hasMissedDose,
+
+                      patientId: patient.id,
                     ),
                   );
                 }).toList(),

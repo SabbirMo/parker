@@ -13,6 +13,8 @@ import 'package:parker_touch/view/monitor/monitor_view.dart';
 import 'package:parker_touch/view/onboarding/onboarding.dart';
 import 'package:parker_touch/view/patient/patient_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:parker_touch/provider/auth/login_provider/login_provider.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -48,6 +50,16 @@ class _SplashViewState extends State<SplashView> {
     final role = prefs.getString('role');
 
     if (!mounted) return;
+
+    // Initialize LoginProvider with stored data
+    final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+    await loginProvider.initialize();
+
+    debugPrint('Splash: Token exists: ${token != null && token.isNotEmpty}');
+    debugPrint('Splash: Role: $role');
+    debugPrint(
+      'Splash: LoginProvider initialized with token: ${loginProvider.accessToken != null}',
+    );
 
     if (token != null && token.isNotEmpty) {
       // User is logged in, navigate to appropriate page based on role
